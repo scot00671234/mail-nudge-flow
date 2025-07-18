@@ -6,12 +6,17 @@ import {
   Mail, 
   Settings, 
   PieChart,
-  PlaneTakeoff
+  PlaneTakeoff,
+  User,
+  LogOut
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/hooks/use-auth";
+import { Button } from "@/components/ui/button";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 const navigation = [
-  { name: "Dashboard", href: "/", icon: BarChart3 },
+  { name: "Dashboard", href: "/dashboard", icon: BarChart3 },
   { name: "Invoices", href: "/invoices", icon: FileText },
   { name: "Customers", href: "/customers", icon: Users },
   { name: "Email Templates", href: "/email-templates", icon: Mail },
@@ -21,6 +26,7 @@ const navigation = [
 
 export default function Sidebar() {
   const [location] = useLocation();
+  const { user, logoutMutation } = useAuth();
 
   return (
     <div className="hidden md:flex md:w-64 md:flex-col">
@@ -59,15 +65,43 @@ export default function Sidebar() {
         
         {/* User Profile */}
         <div className="flex-shrink-0 px-4 py-4 border-t border-gray-200">
-          <div className="flex items-center">
-            <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
-              <Users className="text-gray-600 w-4 h-4" />
-            </div>
-            <div className="ml-3">
-              <p className="text-sm font-medium text-gray-700">John Smith</p>
-              <p className="text-xs text-gray-500">john@company.com</p>
-            </div>
-          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="w-full justify-start p-0 h-auto">
+                <div className="flex items-center w-full">
+                  <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
+                    <User className="text-gray-600 w-4 h-4" />
+                  </div>
+                  <div className="ml-3 text-left flex-1">
+                    <p className="text-sm font-medium text-gray-700">
+                      {user?.firstName && user?.lastName 
+                        ? `${user.firstName} ${user.lastName}` 
+                        : user?.username || "User"
+                      }
+                    </p>
+                    <p className="text-xs text-gray-500">{user?.email || ""}</p>
+                  </div>
+                </div>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <Link href="/account">
+                <DropdownMenuItem className="cursor-pointer">
+                  <User className="mr-2 h-4 w-4" />
+                  Account Settings
+                </DropdownMenuItem>
+              </Link>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem 
+                className="cursor-pointer text-red-600"
+                onClick={() => logoutMutation.mutate()}
+                disabled={logoutMutation.isPending}
+              >
+                <LogOut className="mr-2 h-4 w-4" />
+                {logoutMutation.isPending ? "Logging out..." : "Logout"}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
     </div>

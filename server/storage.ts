@@ -1,16 +1,19 @@
 import { 
+  users,
   customers, 
   invoices, 
   emailTemplates, 
   nudgeSchedules, 
   activities, 
   nudgeSettings,
+  type User,
   type Customer, 
   type Invoice, 
   type EmailTemplate, 
   type NudgeSchedule, 
   type Activity, 
   type NudgeSettings,
+  type InsertUser,
   type InsertCustomer, 
   type InsertInvoice, 
   type InsertEmailTemplate, 
@@ -18,8 +21,23 @@ import {
   type InsertActivity, 
   type InsertNudgeSettings
 } from "@shared/schema";
+import session from "express-session";
+import createMemoryStore from "memorystore";
 
 export interface IStorage {
+  sessionStore: session.Store;
+
+  // Users
+  getUser(id: number): Promise<User | undefined>;
+  getUserByUsername(username: string): Promise<User | undefined>;
+  getUserByEmail(email: string): Promise<User | undefined>;
+  getUserByResetToken(token: string): Promise<User | undefined>;
+  createUser(user: InsertUser): Promise<User>;
+  updateUser(id: number, user: Partial<InsertUser>): Promise<User | undefined>;
+  updateUserStripeInfo(id: number, stripeCustomerId: string, stripeSubscriptionId: string): Promise<User | undefined>;
+  setResetToken(id: number, token: string, expiry: Date): Promise<User | undefined>;
+  clearResetToken(id: number): Promise<User | undefined>;
+
   // Customers
   getCustomers(): Promise<Customer[]>;
   getCustomer(id: number): Promise<Customer | undefined>;
@@ -70,7 +88,11 @@ export interface IStorage {
   }>;
 }
 
+const MemoryStore = createMemoryStore(session);
+
 export class MemStorage implements IStorage {
+  public sessionStore: session.Store;
+  private users: Map<number, User>;
   private customers: Map<number, Customer>;
   private invoices: Map<number, Invoice>;
   private emailTemplates: Map<number, EmailTemplate>;
@@ -80,12 +102,15 @@ export class MemStorage implements IStorage {
   private currentId: { [key: string]: number };
 
   constructor() {
+    this.sessionStore = new MemoryStore({ checkPeriod: 86400000 });
+    this.users = new Map();
     this.customers = new Map();
     this.invoices = new Map();
     this.emailTemplates = new Map();
     this.nudgeSchedules = new Map();
     this.activities = new Map();
     this.currentId = {
+      users: 1,
       customers: 1,
       invoices: 1,
       emailTemplates: 1,
@@ -142,6 +167,77 @@ export class MemStorage implements IStorage {
     });
   }
 
+  // Users
+  async getUser(id: number): Promise<User | undefined> {
+    return this.users.get(id);
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    return Array.from(this.users.values()).find(user => user.username === username);
+  }
+
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    return Array.from(this.users.values()).find(user => user.email === email);
+  }
+
+  async getUserByResetToken(token: string): Promise<User | undefined> {
+    return Array.from(this.users.values()).find(user => user.resetToken === token && user.resetTokenExpiry && new Date() < user.resetTokenExpiry);
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const id = this.currentId.users++;
+    const user: User = {
+      ...insertUser,
+      id,
+      createdAt: new Date(),
+      firstName: insertUser.firstName ?? null,
+      lastName: insertUser.lastName ?? null,
+      stripeCustomerId: insertUser.stripeCustomerId ?? null,
+      stripeSubscriptionId: insertUser.stripeSubscriptionId ?? null,
+      subscriptionStatus: insertUser.subscriptionStatus ?? "inactive",
+      resetToken: null,
+      resetTokenExpiry: null,
+    };
+    this.users.set(id, user);
+    return user;
+  }
+
+  async updateUser(id: number, updateData: Partial<InsertUser>): Promise<User | undefined> {
+    const user = this.users.get(id);
+    if (!user) return undefined;
+    
+    const updated = { ...user, ...updateData };
+    this.users.set(id, updated);
+    return updated;
+  }
+
+  async updateUserStripeInfo(id: number, stripeCustomerId: string, stripeSubscriptionId: string): Promise<User | undefined> {
+    const user = this.users.get(id);
+    if (!user) return undefined;
+    
+    const updated = { ...user, stripeCustomerId, stripeSubscriptionId, subscriptionStatus: "active" };
+    this.users.set(id, updated);
+    return updated;
+  }
+
+  async setResetToken(id: number, token: string, expiry: Date): Promise<User | undefined> {
+    const user = this.users.get(id);
+    if (!user) return undefined;
+    
+    const updated = { ...user, resetToken: token, resetTokenExpiry: expiry };
+    this.users.set(id, updated);
+    return updated;
+  }
+
+  async clearResetToken(id: number): Promise<User | undefined> {
+    const user = this.users.get(id);
+    if (!user) return undefined;
+    
+    const updated = { ...user, resetToken: null, resetTokenExpiry: null };
+    this.users.set(id, updated);
+    return updated;
+  }
+
   // Customers
   async getCustomers(): Promise<Customer[]> {
     return Array.from(this.customers.values());
@@ -157,6 +253,8 @@ export class MemStorage implements IStorage {
       ...insertCustomer,
       id,
       createdAt: new Date(),
+      address: insertCustomer.address ?? null,
+      phone: insertCustomer.phone ?? null,
     };
     this.customers.set(id, customer);
     return customer;
@@ -206,6 +304,9 @@ export class MemStorage implements IStorage {
       id,
       amount: insertInvoice.amount.toString(),
       createdAt: new Date(),
+      status: insertInvoice.status ?? "pending",
+      description: insertInvoice.description ?? null,
+      paidDate: insertInvoice.paidDate ?? null,
     };
     this.invoices.set(id, invoice);
     
@@ -267,6 +368,7 @@ export class MemStorage implements IStorage {
       ...insertTemplate,
       id,
       createdAt: new Date(),
+      isActive: insertTemplate.isActive ?? null,
     };
     this.emailTemplates.set(id, template);
     return template;
@@ -313,6 +415,8 @@ export class MemStorage implements IStorage {
       ...insertSchedule,
       id,
       createdAt: new Date(),
+      status: insertSchedule.status ?? "scheduled",
+      sentDate: insertSchedule.sentDate ?? null,
     };
     this.nudgeSchedules.set(id, schedule);
     return schedule;
@@ -356,6 +460,8 @@ export class MemStorage implements IStorage {
       ...insertActivity,
       id,
       createdAt: new Date(),
+      customerId: insertActivity.customerId ?? null,
+      invoiceId: insertActivity.invoiceId ?? null,
     };
     this.activities.set(id, activity);
     return activity;
