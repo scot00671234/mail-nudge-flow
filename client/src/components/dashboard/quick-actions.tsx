@@ -10,7 +10,7 @@ export default function QuickActions({ onUploadInvoice, onCreateInvoice }: Quick
   return (
     <Card>
       <CardHeader>
-        <h3 className="text-lg font-semibold text-gray-900">Quick Actions</h3>
+        <h3 className="text-lg font-semibold text-gray-900">What would you like to do?</h3>
       </CardHeader>
       <CardContent className="space-y-3">
         <button
@@ -21,7 +21,7 @@ export default function QuickActions({ onUploadInvoice, onCreateInvoice }: Quick
             <div className="w-8 h-8 bg-flow-blue bg-opacity-10 rounded-lg flex items-center justify-center mr-3">
               <Upload className="text-flow-blue w-4 h-4" />
             </div>
-            <span className="font-medium text-gray-900">Upload Invoice</span>
+            <span className="font-medium text-gray-900">Add an Invoice</span>
           </div>
           <ChevronRight className="text-gray-400 w-4 h-4" />
         </button>
@@ -34,7 +34,7 @@ export default function QuickActions({ onUploadInvoice, onCreateInvoice }: Quick
             <div className="w-8 h-8 bg-flow-success bg-opacity-10 rounded-lg flex items-center justify-center mr-3">
               <Plus className="text-flow-success w-4 h-4" />
             </div>
-            <span className="font-medium text-gray-900">Create Invoice</span>
+            <span className="font-medium text-gray-900">Create New Invoice</span>
           </div>
           <ChevronRight className="text-gray-400 w-4 h-4" />
         </button>
@@ -46,7 +46,7 @@ export default function QuickActions({ onUploadInvoice, onCreateInvoice }: Quick
             <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
               <PlaneTakeoff className="text-purple-600 w-4 h-4" />
             </div>
-            <span className="font-medium text-gray-900">Send Bulk Nudges</span>
+            <span className="font-medium text-gray-900">Send Payment Reminders</span>
           </div>
           <ChevronRight className="text-gray-400 w-4 h-4" />
         </button>
@@ -58,7 +58,7 @@ export default function QuickActions({ onUploadInvoice, onCreateInvoice }: Quick
             <div className="w-8 h-8 bg-flow-warning bg-opacity-10 rounded-lg flex items-center justify-center mr-3">
               <Mail className="text-flow-warning w-4 h-4" />
             </div>
-            <span className="font-medium text-gray-900">Manage Templates</span>
+            <span className="font-medium text-gray-900">Edit Reminder Messages</span>
           </div>
           <ChevronRight className="text-gray-400 w-4 h-4" />
         </button>

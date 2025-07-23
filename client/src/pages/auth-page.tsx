@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Zap, ArrowLeft, Loader2 } from "lucide-react";
+import { Zap, ArrowLeft, Loader2, CheckCircle } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { Redirect } from "wouter";
@@ -284,10 +284,10 @@ export default function AuthPage() {
               </div>
             </Link>
             <h2 className="mt-6 text-2xl font-medium text-foreground">
-              Welcome to Flow
+              Get paid faster
             </h2>
             <p className="mt-2 text-sm text-gray-600">
-              Automate your invoice follow-ups and get paid faster
+              Stop chasing payments - Flow sends reminders automatically
             </p>
           </div>
 
@@ -300,9 +300,9 @@ export default function AuthPage() {
             <TabsContent value="login">
               <Card>
                 <CardHeader>
-                  <CardTitle>Sign in to your account</CardTitle>
+                  <CardTitle>Welcome back!</CardTitle>
                   <CardDescription>
-                    Enter your credentials to access your dashboard
+                    Sign in to see how your invoices are doing
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -361,9 +361,9 @@ export default function AuthPage() {
             <TabsContent value="register">
               <Card>
                 <CardHeader>
-                  <CardTitle>Create your account</CardTitle>
+                  <CardTitle>Start getting paid faster</CardTitle>
                   <CardDescription>
-                    Get started with Flow today
+                    Create your free account - no credit card needed
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -434,29 +434,29 @@ export default function AuthPage() {
         <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-secondary/20" />
         <div className="relative flex items-center justify-center h-full p-8">
           <div className="max-w-md text-center space-y-6">
-            <h3 className="text-2xl font-bold">Streamline Your Collections</h3>
+            <h3 className="text-2xl font-bold">Never chase payments again</h3>
             <p className="text-muted-foreground">
-              Join thousands of businesses using Flow to automate invoice follow-ups
-              and improve cash flow with intelligent payment reminders.
+              Flow automatically handles all your payment follow-ups, so you can focus on 
+              growing your business instead of chasing invoices.
             </p>
             <div className="space-y-4">
               <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                  <Zap className="w-4 h-4 text-primary" />
+                <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
+                  <CheckCircle className="w-4 h-4 text-green-600" />
                 </div>
-                <span className="text-sm">Automated email sequences</span>
+                <span className="text-sm">Sends polite reminders automatically</span>
               </div>
               <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                  <Zap className="w-4 h-4 text-primary" />
+                <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
+                  <CheckCircle className="w-4 h-4 text-blue-600" />
                 </div>
-                <span className="text-sm">Real-time payment tracking</span>
+                <span className="text-sm">Tracks who has paid and who hasn't</span>
               </div>
               <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                  <Zap className="w-4 h-4 text-primary" />
+                <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center">
+                  <CheckCircle className="w-4 h-4 text-purple-600" />
                 </div>
-                <span className="text-sm">Professional email templates</span>
+                <span className="text-sm">Works with your existing invoices</span>
               </div>
             </div>
           </div>

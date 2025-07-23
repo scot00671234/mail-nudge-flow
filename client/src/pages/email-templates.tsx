@@ -22,8 +22,8 @@ import { z } from "zod";
 type FormData = z.infer<typeof insertEmailTemplateSchema>;
 
 const templateTypes = [
-  { value: "first_reminder", label: "First Reminder" },
-  { value: "second_reminder", label: "Second Reminder" },
+  { value: "first_reminder", label: "Friendly Reminder" },
+  { value: "second_reminder", label: "Second Notice" },
   { value: "final_notice", label: "Final Notice" },
 ];
 
@@ -421,12 +421,12 @@ export default function EmailTemplates() {
                     <div className="space-y-0.5">
                       <FormLabel className="text-base">Active Template</FormLabel>
                       <div className="text-sm text-gray-500">
-                        Enable this template for automated nudges
+                        Enable this template for automatic reminders
                       </div>
                     </div>
                     <FormControl>
                       <Switch
-                        checked={field.value}
+                        checked={field.value ?? false}
                         onCheckedChange={field.onChange}
                       />
                     </FormControl>
@@ -476,7 +476,7 @@ export default function EmailTemplates() {
               </div>
               
               <div className="text-xs text-gray-500">
-                <p>Note: Merge fields like {{customerName}} will be replaced with actual values when the email is sent.</p>
+                <p>Note: Merge fields like {"{"}{"{"}{"}"}customerName{"}"}{"{"}{"}"} will be replaced with actual values when the email is sent.</p>
               </div>
             </div>
           </DialogContent>

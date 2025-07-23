@@ -8,6 +8,21 @@ Flow is a modern full-stack web application designed to automate and manage invo
 
 Preferred communication style: Simple, everyday language.
 
+## Recent Changes
+
+### January 23, 2025 - UX Simplification Update
+- **Migration completed** from Replit Agent to Replit environment
+- **Simplified terminology** throughout the application:
+  - "Dashboard" → "Overview"
+  - "Nudges" → "Payment Reminders" 
+  - "Email Templates" → "Reminder Messages"
+  - "Analytics" → "Reports"
+- **Added comprehensive onboarding** with welcome guide and first invoice prompt
+- **Enhanced authentication experience** with user-friendly messaging
+- **Improved navigation** with clearer, everyday language in sidebar
+- **Created help components** for contextual assistance
+- **Added visual guidance** for non-technical users
+
 ## System Architecture
 
 ### Frontend Architecture

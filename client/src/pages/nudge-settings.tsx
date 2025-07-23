@@ -18,7 +18,7 @@ import { useEffect } from "react";
 
 type FormData = z.infer<typeof insertNudgeSettingsSchema>;
 
-export default function NudgeSettingsPage() {
+export default function ReminderSettingsPage() {
   const { toast } = useToast();
 
   const { data: settings, isLoading } = useQuery<NudgeSettings>({
@@ -59,7 +59,7 @@ export default function NudgeSettingsPage() {
     onSuccess: () => {
       toast({
         title: "Settings updated successfully",
-        description: "Your nudge automation settings have been saved.",
+        description: "Your reminder settings have been saved.",
       });
       queryClient.invalidateQueries({ queryKey: ["/api/nudge-settings"] });
     },
@@ -93,8 +93,8 @@ export default function NudgeSettingsPage() {
         <header className="bg-white shadow-sm border-b border-gray-200">
           <div className="px-4 sm:px-6 lg:px-8">
             <div className="py-4">
-              <h1 className="text-2xl font-bold text-gray-900">Nudge Settings</h1>
-              <p className="text-sm text-gray-500">Configure automated payment reminders</p>
+              <h1 className="text-2xl font-bold text-gray-900">Reminder Settings</h1>
+              <p className="text-sm text-gray-500">Choose when to send payment reminders</p>
             </div>
           </div>
         </header>
@@ -114,8 +114,8 @@ export default function NudgeSettingsPage() {
       <header className="bg-white shadow-sm border-b border-gray-200">
         <div className="px-4 sm:px-6 lg:px-8">
           <div className="py-4">
-            <h1 className="text-2xl font-bold text-gray-900">Nudge Settings</h1>
-            <p className="text-sm text-gray-500">Configure automated payment reminders and scheduling</p>
+            <h1 className="text-2xl font-bold text-gray-900">Reminder Settings</h1>
+            <p className="text-sm text-gray-500">Choose when and how to send payment reminders</p>
           </div>
         </div>
       </header>
@@ -132,8 +132,8 @@ export default function NudgeSettingsPage() {
                   <Clock className="text-flow-blue w-5 h-5" />
                 </div>
                 <div>
-                  <h2 className="text-lg font-semibold text-gray-900">Nudge Timing</h2>
-                  <p className="text-sm text-gray-500">Set when automated reminders are sent</p>
+                  <h2 className="text-lg font-semibold text-gray-900">When to Send Reminders</h2>
+                  <p className="text-sm text-gray-500">Choose the timing that works best for your business</p>
                 </div>
               </div>
             </CardHeader>
@@ -162,7 +162,7 @@ export default function NudgeSettingsPage() {
                             <span className="text-sm text-gray-500">days after due date</span>
                           </div>
                           <FormDescription>
-                            Send the first gentle reminder to customers
+                            A friendly reminder that payment is due
                           </FormDescription>
                           <FormMessage />
                         </FormItem>
@@ -189,7 +189,7 @@ export default function NudgeSettingsPage() {
                             <span className="text-sm text-gray-500">days after due date</span>
                           </div>
                           <FormDescription>
-                            Send a more urgent reminder for past due invoices
+                            A follow-up for overdue payments
                           </FormDescription>
                           <FormMessage />
                         </FormItem>

@@ -46,14 +46,14 @@ export default function Invoices() {
     },
     onSuccess: () => {
       toast({
-        title: "Nudge sent successfully",
+        title: "Reminder sent successfully",
         description: "The payment reminder has been sent to the customer.",
       });
       queryClient.invalidateQueries({ queryKey: ["/api/invoices"] });
     },
     onError: () => {
       toast({
-        title: "Failed to send nudge",
+        title: "Failed to send reminder",
         description: "There was an error sending the payment reminder.",
         variant: "destructive",
       });

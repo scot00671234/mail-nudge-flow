@@ -16,12 +16,12 @@ import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 const navigation = [
-  { name: "Dashboard", href: "/dashboard", icon: BarChart3 },
-  { name: "Invoices", href: "/invoices", icon: FileText },
+  { name: "Overview", href: "/dashboard", icon: BarChart3 },
+  { name: "My Invoices", href: "/invoices", icon: FileText },
   { name: "Customers", href: "/customers", icon: Users },
-  { name: "Email Templates", href: "/email-templates", icon: Mail },
-  { name: "Nudge Settings", href: "/nudge-settings", icon: Settings },
-  { name: "Analytics", href: "/analytics", icon: PieChart },
+  { name: "Reminder Messages", href: "/email-templates", icon: Mail },
+  { name: "Reminder Settings", href: "/nudge-settings", icon: Settings },
+  { name: "Reports", href: "/analytics", icon: PieChart },
 ];
 
 export default function Sidebar() {

@@ -27,7 +27,7 @@ export default function LandingPage() {
             <a href="#specifications" className="text-muted-foreground hover:text-foreground transition-colors font-medium">Specifications</a>
             <a href="#contact" className="text-muted-foreground hover:text-foreground transition-colors font-medium">Contact Us</a>
             <Link href="/auth">
-              <Button className="px-6 py-2 rounded-full bg-primary hover:bg-primary/90">Learn More</Button>
+              <Button className="px-6 py-2 rounded-full bg-primary hover:bg-primary/90">Start Now</Button>
             </Link>
           </nav>
         </div>
@@ -44,8 +44,8 @@ export default function LandingPage() {
               </h1>
             </div>
             <p className="subtitle max-w-3xl mx-auto text-xl">
-              Flow transforms invoice collection with intelligent automation, real-time insights, 
-              and seamless payment workflows that accelerate your cash flow.
+              Never chase payments again. Flow automatically sends payment reminders 
+              and helps you get paid faster, without any technical setup.
             </p>
             <div className="flex items-center justify-center gap-4 pt-8">
               <Link href="/auth">
@@ -53,7 +53,7 @@ export default function LandingPage() {
                   size="lg" 
                   className="px-8 py-4 text-lg rounded-full bg-primary hover:bg-primary/90 shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105"
                 >
-                  Discover More
+                  Get Started Free
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
@@ -106,9 +106,9 @@ export default function LandingPage() {
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto text-center">
               <blockquote className="text-2xl md:text-3xl font-medium text-foreground leading-relaxed mb-8">
-                "I was skeptical, but Flow has completely transformed the way I manage my 
-                invoicing. The automated nudging is so intuitive, and the platform is so 
-                easy to use. I can't imagine running my business without it."
+                "I used to spend hours chasing payments every week. Now Flow handles it all 
+                automatically, and I get paid 40% faster. It's like having a personal 
+                assistant for my invoices."
               </blockquote>
               <div className="flex items-center justify-center space-x-3">
                 <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
