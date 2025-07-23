@@ -1,0 +1,29 @@
+<svg width="120" height="40" viewBox="0 0 120 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Flow icon with modern gradient -->
+  <defs>
+    <linearGradient id="flowGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2563eb;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1d4ed8;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="accentGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#2563eb;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Modern geometric F -->
+  <g transform="translate(4, 6)">
+    <!-- Main F shape with rounded corners -->
+    <path d="M0 4C0 1.79086 1.79086 0 4 0H20C20.5523 0 21 0.447715 21 1C21 1.55228 20.5523 2 20 2H4C2.89543 2 2 2.89543 2 4V12H18C18.5523 12 19 12.4477 19 13C19 13.5523 18.5523 14 18 14H2V24C2 25.1046 2.89543 26 4 26C4.55228 26 5 26.4477 5 27C5 27.5523 4.55228 28 4 28C1.79086 28 0 26.2091 0 24V4Z" fill="url(#flowGradient)"/>
+    
+    <!-- Flowing accent lines -->
+    <path d="M24 8C26.2091 8 28 9.79086 28 12V16C28 18.2091 26.2091 20 24 20C23.4477 20 23 19.5523 23 19C23 18.4477 23.4477 18 24 18C25.1046 18 26 17.1046 26 16V12C26 10.8954 25.1046 10 24 10C23.4477 10 23 9.55228 23 9C23 8.44772 23.4477 8 24 8Z" fill="url(#accentGradient)" opacity="0.8"/>
+    
+    <circle cx="31" cy="14" r="2" fill="url(#accentGradient)" opacity="0.6"/>
+  </g>
+  
+  <!-- Text "Flow" -->
+  <g transform="translate(45, 8)">
+    <text x="0" y="16" font-family="system-ui, -apple-system, sans-serif" font-size="20" font-weight="600" fill="#1e293b" letter-spacing="-0.025em">Flow</text>
+  </g>
+</svg>

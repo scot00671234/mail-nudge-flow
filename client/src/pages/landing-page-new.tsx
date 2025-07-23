@@ -20,12 +20,7 @@ export default function LandingPage() {
       {/* Header */}
       <header className="border-b border-border/40">
         <div className="container mx-auto px-4 py-6 flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-sm">
-              <span className="text-primary-foreground font-semibold text-lg">F</span>
-            </div>
-            <span className="text-2xl font-medium tracking-tight">Flow</span>
-          </div>
+          <img src="/logo.svg" alt="Flow Logo" className="h-8" />
           <nav className="hidden md:flex items-center space-x-8">
             <a href="#benefits" className="text-muted-foreground hover:text-foreground transition-colors font-medium">Benefits</a>
             <a href="#how-it-works" className="text-muted-foreground hover:text-foreground transition-colors font-medium">How-to</a>

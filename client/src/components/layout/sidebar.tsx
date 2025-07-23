@@ -33,12 +33,7 @@ export default function Sidebar() {
       <div className="flex flex-col flex-grow pt-8 pb-4 overflow-y-auto bg-background border-r border-border/40">
         {/* Logo */}
         <div className="flex items-center flex-shrink-0 px-6">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-sm">
-              <span className="text-primary-foreground font-semibold text-lg">F</span>
-            </div>
-            <h1 className="text-2xl font-medium tracking-tight text-foreground">Flow</h1>
-          </div>
+          <img src="/logo.svg" alt="Flow Logo" className="h-8" />
         </div>
         
         {/* Navigation */}

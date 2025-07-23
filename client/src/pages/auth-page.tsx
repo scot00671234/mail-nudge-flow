@@ -281,11 +281,8 @@ export default function AuthPage() {
         <div className="max-w-md w-full space-y-8">
           <div className="text-center">
             <Link href="/">
-              <div className="flex items-center justify-center space-x-3 mb-8">
-                <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center shadow-sm">
-                  <span className="text-primary-foreground font-semibold text-xl">F</span>
-                </div>
-                <span className="text-3xl font-medium tracking-tight text-foreground">Flow</span>
+              <div className="flex items-center justify-center mb-8">
+                <img src="/logo.svg" alt="Flow Logo" className="h-10" />
               </div>
             </Link>
             <h2 className="mt-6 text-2xl font-medium text-foreground">

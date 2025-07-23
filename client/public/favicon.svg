@@ -1,0 +1,24 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="faviconGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2563eb;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1d4ed8;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="faviconAccent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#2563eb;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background circle with subtle gradient -->
+  <circle cx="16" cy="16" r="15" fill="url(#faviconGradient)" stroke="#e2e8f0" stroke-width="2"/>
+  
+  <!-- Modern F logo centered -->
+  <g transform="translate(8, 8)">
+    <!-- Main F shape -->
+    <path d="M0 2C0 0.895431 0.895431 0 2 0H12C12.5523 0 13 0.447715 13 1C13 1.55228 12.5523 2 12 2H2V6H10C10.5523 6 11 6.44772 11 7C11 7.55228 10.5523 8 10 8H2V14C2 14.5523 1.55228 15 1 15C0.447715 15 0 14.5523 0 14V2Z" fill="white"/>
+    
+    <!-- Flowing accent -->
+    <path d="M14 4C15.1046 4 16 4.89543 16 6V8C16 9.10457 15.1046 10 14 10C13.4477 10 13 9.55228 13 9C13 8.44772 13.4477 8 14 8C14 8 14 7 14 6C14 6 14 5 14 5C13.4477 5 13 4.55228 13 4C13 3.44772 13.4477 3 14 3C14.5523 3 15 3.44772 15 4C15 4.55228 14.5523 5 14 5Z" fill="url(#faviconAccent)" opacity="0.7"/>
+  </g>
+</svg>
