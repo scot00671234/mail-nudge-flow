@@ -111,16 +111,16 @@ export default function Invoices() {
   return (
     <>
       {/* Header */}
-      <header className="bg-white shadow-sm border-b border-gray-200">
-        <div className="px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-4">
+      <header className="bg-background border-b border-border/40">
+        <div className="px-6 lg:px-8">
+          <div className="flex justify-between items-center py-8">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Invoices</h1>
-              <p className="text-sm text-gray-500">Manage your invoices and payment tracking</p>
+              <h1 className="text-3xl font-medium tracking-tight text-foreground">Invoices</h1>
+              <p className="text-muted-foreground mt-1">Manage your invoices and payment tracking</p>
             </div>
             <Button 
               onClick={() => setIsUploadModalOpen(true)}
-              className="bg-flow-blue text-white hover:bg-blue-600"
+              className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full px-6"
             >
               <Plus className="mr-2 w-4 h-4" />
               Add Invoice
@@ -130,11 +130,11 @@ export default function Invoices() {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
-        <Card>
-          <CardHeader>
+      <main className="flex-1 overflow-y-auto p-6 lg:p-8 bg-background">
+        <Card className="border-border/40 bg-card">
+          <CardHeader className="pb-6">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-gray-900">All Invoices</h2>
+              <h2 className="text-xl font-medium text-foreground">All Invoices</h2>
               <div className="flex items-center space-x-4">
                 <div className="relative">
                   <Input
@@ -142,12 +142,12 @@ export default function Invoices() {
                     placeholder="Search invoices..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 pr-4 py-2 w-64"
+                    className="pl-10 pr-4 py-2 w-64 rounded-xl border-border/40"
                   />
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                 </div>
                 <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger className="w-32">
+                  <SelectTrigger className="w-36 rounded-xl border-border/40">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -159,7 +159,7 @@ export default function Invoices() {
                     <SelectItem value="overdue">Overdue</SelectItem>
                   </SelectContent>
                 </Select>
-                <Button variant="ghost" size="sm">
+                <Button variant="ghost" size="sm" className="rounded-xl">
                   <Filter className="w-4 h-4" />
                 </Button>
               </div>

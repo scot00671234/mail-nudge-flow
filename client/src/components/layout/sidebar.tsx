@@ -29,20 +29,20 @@ export default function Sidebar() {
   const { user, logoutMutation } = useAuth();
 
   return (
-    <div className="hidden md:flex md:w-64 md:flex-col">
-      <div className="flex flex-col flex-grow pt-5 pb-4 overflow-y-auto bg-white border-r border-gray-200">
+    <div className="hidden md:flex md:w-72 md:flex-col">
+      <div className="flex flex-col flex-grow pt-8 pb-4 overflow-y-auto bg-background border-r border-border/40">
         {/* Logo */}
-        <div className="flex items-center flex-shrink-0 px-4">
+        <div className="flex items-center flex-shrink-0 px-6">
           <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-flow-blue rounded-lg flex items-center justify-center">
-              <PlaneTakeoff className="text-white w-4 h-4" />
+            <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-sm">
+              <span className="text-primary-foreground font-semibold text-lg">F</span>
             </div>
-            <h1 className="text-xl font-bold text-gray-900">Flow</h1>
+            <h1 className="text-2xl font-medium tracking-tight text-foreground">Flow</h1>
           </div>
         </div>
         
         {/* Navigation */}
-        <nav className="mt-8 flex-1 px-2 space-y-1">
+        <nav className="mt-12 flex-1 px-4 space-y-2">
           {navigation.map((item) => {
             const isActive = location === item.href;
             return (
@@ -50,12 +50,12 @@ export default function Sidebar() {
                 <a
                   className={cn(
                     isActive
-                      ? "bg-flow-blue text-white"
-                      : "text-gray-600 hover:bg-gray-50 hover:text-gray-900",
-                    "group flex items-center px-2 py-2 text-sm font-medium rounded-md"
+                      ? "bg-primary/10 text-primary border-primary/20"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground border-transparent",
+                    "group flex items-center px-4 py-3 text-sm font-medium rounded-xl border transition-all duration-200"
                   )}
                 >
-                  <item.icon className="mr-3 w-4 h-4" />
+                  <item.icon className="mr-3 w-5 h-5" />
                   {item.name}
                 </a>
               </Link>
@@ -64,13 +64,13 @@ export default function Sidebar() {
         </nav>
         
         {/* User Profile */}
-        <div className="flex-shrink-0 px-4 py-4 border-t border-gray-200">
+        <div className="flex-shrink-0 px-4 py-6 border-t border-border/40">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="w-full justify-start p-0 h-auto">
-                <div className="flex items-center w-full">
-                  <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
-                    <User className="text-gray-600 w-4 h-4" />
+              <Button variant="ghost" className="w-full justify-start p-0 h-auto rounded-xl">
+                <div className="flex items-center w-full p-3">
+                  <div className="w-10 h-10 bg-muted rounded-full flex items-center justify-center">
+                    <User className="text-muted-foreground w-5 h-5" />
                   </div>
                   <div className="ml-3 text-left flex-1">
                     <p className="text-sm font-medium text-gray-700">

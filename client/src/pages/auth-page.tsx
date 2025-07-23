@@ -145,19 +145,21 @@ export default function AuthPage() {
   // Show reset password form if token is present
   if (resetToken) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen flex items-center justify-center bg-background py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full space-y-8">
           <div className="text-center">
             <Link href="/">
-              <div className="flex items-center justify-center space-x-2">
-                <Zap className="h-8 w-8 text-primary" />
-                <span className="text-2xl font-bold">Flow</span>
+              <div className="flex items-center justify-center space-x-3 mb-8">
+                <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center shadow-sm">
+                  <span className="text-primary-foreground font-semibold text-xl">F</span>
+                </div>
+                <span className="text-3xl font-medium tracking-tight text-foreground">Flow</span>
               </div>
             </Link>
-            <h2 className="mt-6 text-3xl font-bold text-gray-900">
+            <h2 className="mt-6 text-2xl font-medium text-foreground">
               Reset your password
             </h2>
-            <p className="mt-2 text-sm text-gray-600">
+            <p className="mt-2 text-sm text-muted-foreground">
               Enter your new password below
             </p>
           </div>
@@ -211,19 +213,21 @@ export default function AuthPage() {
   // Show forgot password form
   if (showForgotPassword) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen flex items-center justify-center bg-background py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full space-y-8">
           <div className="text-center">
             <Link href="/">
-              <div className="flex items-center justify-center space-x-2">
-                <Zap className="h-8 w-8 text-primary" />
-                <span className="text-2xl font-bold">Flow</span>
+              <div className="flex items-center justify-center space-x-3 mb-8">
+                <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center shadow-sm">
+                  <span className="text-primary-foreground font-semibold text-xl">F</span>
+                </div>
+                <span className="text-3xl font-medium tracking-tight text-foreground">Flow</span>
               </div>
             </Link>
-            <h2 className="mt-6 text-3xl font-bold text-gray-900">
+            <h2 className="mt-6 text-2xl font-medium text-foreground">
               Forgot your password?
             </h2>
-            <p className="mt-2 text-sm text-gray-600">
+            <p className="mt-2 text-sm text-muted-foreground">
               Enter your email address and we'll send you a reset link
             </p>
           </div>
@@ -273,16 +277,18 @@ export default function AuthPage() {
   return (
     <div className="min-h-screen grid lg:grid-cols-2">
       {/* Left side - Form */}
-      <div className="flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-background">
         <div className="max-w-md w-full space-y-8">
           <div className="text-center">
             <Link href="/">
-              <div className="flex items-center justify-center space-x-2">
-                <Zap className="h-8 w-8 text-primary" />
-                <span className="text-2xl font-bold">Flow</span>
+              <div className="flex items-center justify-center space-x-3 mb-8">
+                <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center shadow-sm">
+                  <span className="text-primary-foreground font-semibold text-xl">F</span>
+                </div>
+                <span className="text-3xl font-medium tracking-tight text-foreground">Flow</span>
               </div>
             </Link>
-            <h2 className="mt-6 text-3xl font-bold text-gray-900">
+            <h2 className="mt-6 text-2xl font-medium text-foreground">
               Welcome to Flow
             </h2>
             <p className="mt-2 text-sm text-gray-600">

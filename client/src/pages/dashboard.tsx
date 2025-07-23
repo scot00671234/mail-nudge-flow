@@ -28,24 +28,24 @@ export default function Dashboard() {
   return (
     <>
       {/* Header */}
-      <header className="bg-white shadow-sm border-b border-gray-200">
-        <div className="px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-4">
+      <header className="bg-background border-b border-border/40">
+        <div className="px-6 lg:px-8">
+          <div className="flex justify-between items-center py-8">
             <div className="flex items-center">
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-                <p className="text-sm text-gray-500">Monitor your invoice nudging activities</p>
+                <h1 className="text-3xl font-medium tracking-tight text-foreground">Dashboard</h1>
+                <p className="text-muted-foreground mt-1">Monitor your invoice collection performance</p>
               </div>
             </div>
             <div className="flex items-center space-x-4">
               <Button 
                 onClick={handleUploadInvoice}
-                className="bg-flow-blue text-white hover:bg-blue-600"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full px-6"
               >
                 <Plus className="mr-2 w-4 h-4" />
                 Add Invoice
               </Button>
-              <Button variant="ghost" size="sm" className="text-gray-400 hover:text-gray-500">
+              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground rounded-full">
                 <Bell className="w-5 h-5" />
               </Button>
             </div>
@@ -54,13 +54,13 @@ export default function Dashboard() {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+      <main className="flex-1 overflow-y-auto p-6 lg:p-8 bg-background">
         {/* Metrics Cards */}
         {metricsLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
             {[...Array(4)].map((_, i) => (
-              <div key={i} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 animate-pulse">
-                <div className="h-16 bg-gray-200 rounded"></div>
+              <div key={i} className="bg-card rounded-2xl border border-border/40 p-8 animate-pulse">
+                <div className="h-20 bg-muted rounded-xl"></div>
               </div>
             ))}
           </div>

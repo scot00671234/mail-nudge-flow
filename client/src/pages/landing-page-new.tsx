@@ -40,25 +40,55 @@ export default function LandingPage() {
 
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="container mx-auto px-4 py-24 text-center">
-          <div className="max-w-4xl mx-auto space-y-8">
-            <h1 className="hero-heading text-foreground">
-              Automate everything.
-            </h1>
-            <p className="subtitle max-w-2xl mx-auto">
-              Flow provides intelligent invoice nudging, without the data overload. 
-              A developer-friendly approach to streamline your business.
+        <section className="container mx-auto px-4 py-32 text-center">
+          <div className="max-w-5xl mx-auto space-y-12">
+            <div className="relative">
+              <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 w-full max-w-sm h-6 bg-gradient-to-r from-transparent via-primary/20 to-transparent rounded-full blur-xl"></div>
+              <h1 className="hero-heading text-foreground">
+                Manage everything.
+              </h1>
+            </div>
+            <p className="subtitle max-w-3xl mx-auto text-xl">
+              Flow transforms invoice collection with intelligent automation, real-time insights, 
+              and seamless payment workflows that accelerate your cash flow.
             </p>
             <div className="flex items-center justify-center gap-4 pt-8">
               <Link href="/auth">
                 <Button 
                   size="lg" 
-                  className="px-8 py-4 text-lg rounded-full bg-primary hover:bg-primary/90 shadow-lg"
+                  className="px-8 py-4 text-lg rounded-full bg-primary hover:bg-primary/90 shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105"
                 >
                   Discover More
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
+            </div>
+            
+            {/* Hero Visual */}
+            <div className="mt-20 relative">
+              <div className="w-full max-w-4xl mx-auto h-96 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent rounded-3xl border border-border/40 overflow-hidden shadow-2xl">
+                <div className="p-8 h-full flex flex-col justify-center">
+                  <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-2xl font-semibold">Payment Collection</h3>
+                      <Badge className="bg-primary/10 text-primary">Live</Badge>
+                    </div>
+                    <div className="text-5xl font-bold text-primary mb-2">87%</div>
+                    <p className="text-muted-foreground">Collection Rate Improvement</p>
+                    
+                    {/* Mock Chart */}
+                    <div className="mt-6 flex items-end space-x-2 h-20">
+                      {[40, 65, 45, 80, 70, 90, 85].map((height, i) => (
+                        <div 
+                          key={i} 
+                          className="bg-primary/20 rounded-t flex-1 transition-all duration-1000 ease-out"
+                          style={{ height: `${height}%` }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -76,51 +106,78 @@ export default function LandingPage() {
           </div>
         </section>
 
+        {/* Testimonial Section */}
+        <section className="py-24 bg-muted/30">
+          <div className="container mx-auto px-4">
+            <div className="max-w-4xl mx-auto text-center">
+              <blockquote className="text-2xl md:text-3xl font-medium text-foreground leading-relaxed mb-8">
+                "I was skeptical, but Flow has completely transformed the way I manage my 
+                invoicing. The automated nudging is so intuitive, and the platform is so 
+                easy to use. I can't imagine running my business without it."
+              </blockquote>
+              <div className="flex items-center justify-center space-x-3">
+                <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                  <span className="text-primary font-semibold">JS</span>
+                </div>
+                <div className="text-left">
+                  <p className="font-medium">Sarah Chen</p>
+                  <p className="text-muted-foreground text-sm">Head of Finance</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Benefits Section */}
         <section id="benefits" className="py-24">
           <div className="container mx-auto px-4">
             <div className="max-w-2xl">
-              <Badge variant="secondary" className="mb-6">Benefits</Badge>
+              <Badge variant="secondary" className="mb-6 text-primary bg-primary/10">Benefits</Badge>
               <h2 className="section-heading mb-6">
-                We've cracked the code.
+                We've simplified invoice collection.
               </h2>
               <p className="subtitle">
-                Flow provides real insights, without the data overload.
+                Flow provides intelligent payment tracking, without the complexity overload.
               </p>
             </div>
           </div>
         </section>
 
-        {/* How It Works Section */}
-        <section id="how-it-works" className="py-24 bg-muted/20">
-          <div className="container mx-auto px-4">
-            <div className="grid lg:grid-cols-4 gap-8">
-              <div className="lg:col-span-1">
-                <h3 className="text-xl font-medium mb-4">Amplify Insights</h3>
+        {/* Map Your Success Section */}
+        <section id="how-it-works" className="py-32">
+          <div className="container mx-auto px-4 text-center">
+            <div className="max-w-2xl mx-auto mb-20">
+              <h2 className="section-heading mb-6">
+                Map Your Success
+              </h2>
+              <p className="subtitle">
+                Simple steps to transform your invoice collection process
+              </p>
+            </div>
+            
+            <div className="grid lg:grid-cols-3 gap-16 max-w-5xl mx-auto">
+              <div className="text-center">
+                <div className="text-8xl font-light text-muted-foreground/30 mb-6">01</div>
+                <h3 className="text-xl font-medium mb-4">Get Started</h3>
                 <p className="text-muted-foreground">
-                  Unlock data-driven decisions with comprehensive analytics, revealing 
-                  key opportunities for strategic regional growth.
+                  With our intuitive setup, you're up and running in minutes. 
+                  Import your invoices and customers seamlessly.
                 </p>
               </div>
-              <div className="lg:col-span-1">
-                <h3 className="text-xl font-medium mb-4">Control Your Flow</h3>
+              <div className="text-center">
+                <div className="text-8xl font-light text-muted-foreground/30 mb-6">02</div>
+                <h3 className="text-xl font-medium mb-4">Customize and Configure</h3>
                 <p className="text-muted-foreground">
-                  Manage and track invoice statuses, ensuring consistent performance and 
-                  streamlined operations everywhere.
+                  Adapt Flow to your specific requirements and preferences. 
+                  Set up automated nudging schedules and email templates.
                 </p>
               </div>
-              <div className="lg:col-span-1">
-                <h3 className="text-xl font-medium mb-4">Benefits</h3>
+              <div className="text-center">
+                <div className="text-8xl font-light text-muted-foreground/30 mb-6">03</div>
+                <h3 className="text-xl font-medium mb-4">Grow Your Business</h3>
                 <p className="text-muted-foreground">
-                  Adapt to diverse markets with built-in localization for clear 
-                  communication and enhanced user experience.
-                </p>
-              </div>
-              <div className="lg:col-span-1">
-                <h3 className="text-xl font-medium mb-4">Visualize Growth</h3>
-                <p className="text-muted-foreground">
-                  Generate precise, visually compelling reports that illustrate 
-                  your growth trajectories across all regions.
+                  Make informed decisions to exceed your goals. 
+                  Watch your collection rates improve automatically.
                 </p>
               </div>
             </div>
@@ -147,104 +204,136 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Comparison Section */}
-        <section className="py-24 bg-muted/20">
+        {/* Specifications Section */}
+        <section id="specifications" className="py-24 bg-muted/20">
           <div className="container mx-auto px-4">
-            <div className="grid lg:grid-cols-3 gap-8">
-              <div className="text-center">
-                <h3 className="text-2xl font-medium mb-6">Flow</h3>
-                <div className="space-y-4 text-left">
-                  <div className="flex items-center gap-3">
-                    <Check className="h-5 w-5 text-primary" />
-                    <span>Ultra-fast browsing</span>
+            <div className="text-center mb-16">
+              <Badge variant="secondary" className="mb-6 text-primary bg-primary/10">Specifications</Badge>
+              <h2 className="section-heading mb-6">
+                Choose Your Plan
+              </h2>
+              <p className="subtitle max-w-2xl mx-auto">
+                Select the perfect plan for your business size and needs
+              </p>
+            </div>
+            
+            <div className="grid lg:grid-cols-3 gap-8 max-w-5xl mx-auto">
+              <Card className="relative bg-white border-2 border-border/40 hover:border-primary/40 transition-all duration-300">
+                <CardHeader className="text-center pb-2">
+                  <CardTitle className="text-xl">Starter</CardTitle>
+                  <div className="text-3xl font-bold mt-4">$29<span className="text-lg font-normal text-muted-foreground">/month</span></div>
+                  <CardDescription>Perfect for small businesses</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3">
+                      <Check className="h-4 w-4 text-primary" />
+                      <span className="text-sm">Up to 100 invoices/month</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <Check className="h-4 w-4 text-primary" />
+                      <span className="text-sm">Automated nudging</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <Check className="h-4 w-4 text-primary" />
+                      <span className="text-sm">Basic analytics</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <Check className="h-4 w-4 text-primary" />
+                      <span className="text-sm">Email support</span>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <Check className="h-5 w-5 text-primary" />
-                    <span>Automated invoice tracking</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Check className="h-5 w-5 text-primary" />
-                    <span>Real-time analytics</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Check className="h-5 w-5 text-primary" />
-                    <span>Smart notifications</span>
-                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card className="relative bg-white border-2 border-primary shadow-lg scale-105">
+                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                  <Badge className="bg-primary text-white">Most Popular</Badge>
                 </div>
-              </div>
-              <div className="text-center opacity-60">
-                <h3 className="text-2xl font-medium mb-6">WebSurge</h3>
-                <div className="space-y-4 text-left">
-                  <div className="flex items-center gap-3">
-                    <Check className="h-5 w-5 text-muted-foreground" />
-                    <span>Fast browsing</span>
+                <CardHeader className="text-center pb-2">
+                  <CardTitle className="text-xl">Professional</CardTitle>
+                  <div className="text-3xl font-bold mt-4">$79<span className="text-lg font-normal text-muted-foreground">/month</span></div>
+                  <CardDescription>For growing businesses</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3">
+                      <Check className="h-4 w-4 text-primary" />
+                      <span className="text-sm">Up to 500 invoices/month</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <Check className="h-4 w-4 text-primary" />
+                      <span className="text-sm">Advanced automation</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <Check className="h-4 w-4 text-primary" />
+                      <span className="text-sm">Real-time analytics</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <Check className="h-4 w-4 text-primary" />
+                      <span className="text-sm">Priority support</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <Check className="h-4 w-4 text-primary" />
+                      <span className="text-sm">API access</span>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <Check className="h-5 w-5 text-muted-foreground" />
-                    <span>Basic tracking</span>
+                </CardContent>
+              </Card>
+              
+              <Card className="relative bg-white border-2 border-border/40 hover:border-primary/40 transition-all duration-300">
+                <CardHeader className="text-center pb-2">
+                  <CardTitle className="text-xl">Enterprise</CardTitle>
+                  <div className="text-3xl font-bold mt-4">$199<span className="text-lg font-normal text-muted-foreground">/month</span></div>
+                  <CardDescription>For large organizations</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3">
+                      <Check className="h-4 w-4 text-primary" />
+                      <span className="text-sm">Unlimited invoices</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <Check className="h-4 w-4 text-primary" />
+                      <span className="text-sm">Custom workflows</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <Check className="h-4 w-4 text-primary" />
+                      <span className="text-sm">Advanced reporting</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <Check className="h-4 w-4 text-primary" />
+                      <span className="text-sm">Dedicated support</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <Check className="h-4 w-4 text-primary" />
+                      <span className="text-sm">SLA guarantee</span>
+                    </div>
                   </div>
-                </div>
-              </div>
-              <div className="text-center opacity-60">
-                <h3 className="text-2xl font-medium mb-6">HyperView</h3>
-                <div className="space-y-4 text-left">
-                  <div className="flex items-center gap-3">
-                    <span className="h-5 w-5 text-muted-foreground">×</span>
-                    <span>Moderate speeds</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <span className="h-5 w-5 text-muted-foreground">×</span>
-                    <span>Limited features</span>
-                  </div>
-                </div>
-              </div>
+                </CardContent>
+              </Card>
             </div>
           </div>
         </section>
       </main>
 
       {/* Footer */}
-      <footer className="border-t bg-muted/20 py-12">
+      <footer className="border-t py-16">
         <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-4 gap-8">
-            <div>
-              <div className="flex items-center space-x-3 mb-4">
-                <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                  <span className="text-primary-foreground font-semibold">F</span>
-                </div>
-                <span className="text-xl font-medium">Flow</span>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 bg-foreground rounded-lg flex items-center justify-center">
+                <span className="text-background font-semibold text-sm">F</span>
               </div>
-              <p className="text-muted-foreground">
-                Streamline your invoice management with intelligent automation.
-              </p>
+              <span className="text-lg font-medium">Flow. 2025</span>
             </div>
-            <div>
-              <h4 className="font-medium mb-4">Product</h4>
-              <ul className="space-y-2 text-muted-foreground">
-                <li><a href="#" className="hover:text-foreground transition-colors">Features</a></li>
-                <li><a href="#" className="hover:text-foreground transition-colors">Pricing</a></li>
-                <li><a href="#" className="hover:text-foreground transition-colors">API</a></li>
-              </ul>
+            <div className="flex items-center space-x-8 text-sm text-muted-foreground">
+              <a href="#benefits" className="hover:text-foreground transition-colors">Benefits</a>
+              <a href="#specifications" className="hover:text-foreground transition-colors">Specifications</a>
+              <a href="#how-it-works" className="hover:text-foreground transition-colors">How-to</a>
+              <a href="#contact" className="hover:text-foreground transition-colors">Contact Us</a>
             </div>
-            <div>
-              <h4 className="font-medium mb-4">Company</h4>
-              <ul className="space-y-2 text-muted-foreground">
-                <li><a href="#" className="hover:text-foreground transition-colors">About</a></li>
-                <li><a href="#" className="hover:text-foreground transition-colors">Blog</a></li>
-                <li><a href="#" className="hover:text-foreground transition-colors">Careers</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-medium mb-4">Support</h4>
-              <ul className="space-y-2 text-muted-foreground">
-                <li><a href="#" className="hover:text-foreground transition-colors">Help Center</a></li>
-                <li><a href="#" className="hover:text-foreground transition-colors">Contact</a></li>
-                <li><a href="#" className="hover:text-foreground transition-colors">Status</a></li>
-              </ul>
-            </div>
-          </div>
-          <div className="mt-8 pt-8 border-t text-center text-muted-foreground">
-            <p>&copy; 2024 Flow. All rights reserved.</p>
+            <p className="text-sm text-muted-foreground">All Rights Reserved</p>
           </div>
         </div>
       </footer>
