@@ -54,11 +54,6 @@ export default function AuthPage() {
   const urlParams = new URLSearchParams(window.location.search);
   const resetToken = urlParams.get("token");
 
-  // Redirect authenticated users to dashboard
-  if (user) {
-    return <Redirect to="/dashboard" />;
-  }
-
   const loginForm = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -92,6 +87,11 @@ export default function AuthPage() {
       confirmPassword: "",
     },
   });
+
+  // Redirect authenticated users to dashboard
+  if (user) {
+    return <Redirect to="/dashboard" />;
+  }
 
   const onLogin = async (data: LoginForm) => {
     try {
