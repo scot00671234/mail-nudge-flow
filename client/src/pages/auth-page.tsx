@@ -14,12 +14,11 @@ import { Redirect } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 
 const loginSchema = z.object({
-  username: z.string().min(1, "Username is required"),
+  email: z.string().email("Invalid email address"),
   password: z.string().min(1, "Password is required"),
 });
 
 const registerSchema = z.object({
-  username: z.string().min(3, "Username must be at least 3 characters"),
   email: z.string().email("Invalid email address"),
   password: z.string().min(8, "Password must be at least 8 characters"),
   firstName: z.string().optional(),
@@ -57,7 +56,7 @@ export default function AuthPage() {
   const loginForm = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      username: "",
+      email: "",
       password: "",
     },
   });
@@ -65,7 +64,6 @@ export default function AuthPage() {
   const registerForm = useForm<RegisterForm>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
-      username: "",
       email: "",
       password: "",
       firstName: "",
@@ -310,14 +308,15 @@ export default function AuthPage() {
                 <CardContent className="space-y-4">
                   <form onSubmit={loginForm.handleSubmit(onLogin)} className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="username">Username</Label>
+                      <Label htmlFor="email">Email</Label>
                       <Input
-                        id="username"
-                        {...loginForm.register("username")}
+                        id="email"
+                        type="email"
+                        {...loginForm.register("email")}
                       />
-                      {loginForm.formState.errors.username && (
+                      {loginForm.formState.errors.email && (
                         <p className="text-sm text-red-600">
-                          {loginForm.formState.errors.username.message}
+                          {loginForm.formState.errors.email.message}
                         </p>
                       )}
                     </div>
@@ -385,18 +384,7 @@ export default function AuthPage() {
                         />
                       </div>
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="register-username">Username</Label>
-                      <Input
-                        id="register-username"
-                        {...registerForm.register("username")}
-                      />
-                      {registerForm.formState.errors.username && (
-                        <p className="text-sm text-red-600">
-                          {registerForm.formState.errors.username.message}
-                        </p>
-                      )}
-                    </div>
+
                     <div className="space-y-2">
                       <Label htmlFor="register-email">Email</Label>
                       <Input

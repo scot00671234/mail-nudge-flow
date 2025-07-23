@@ -21,8 +21,8 @@ type AuthContextType = {
   changePasswordMutation: UseMutationResult<void, Error, { currentPassword: string; newPassword: string }>;
 };
 
-type LoginData = Pick<InsertUser, "username" | "password">;
-type RegisterData = Pick<InsertUser, "username" | "email" | "password"> & {
+type LoginData = Pick<InsertUser, "email" | "password">;
+type RegisterData = Pick<InsertUser, "email" | "password"> & {
   firstName?: string;
   lastName?: string;
 };
