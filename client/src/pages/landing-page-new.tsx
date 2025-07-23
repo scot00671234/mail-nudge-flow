@@ -40,12 +40,12 @@ export default function LandingPage() {
             <div className="relative">
               <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 w-full max-w-sm h-6 bg-gradient-to-r from-transparent via-primary/20 to-transparent rounded-full blur-xl"></div>
               <h1 className="hero-heading text-foreground">
-                Manage everything.
+                Stop chasing payments. Start getting paid.
               </h1>
             </div>
             <p className="subtitle max-w-3xl mx-auto text-xl">
-              Never chase payments again. Flow automatically sends payment reminders 
-              and helps you get paid faster, without any technical setup.
+              Chasing payments kills your focus. Flow handles reminders automatically, 
+              so you can stop chasing and get back to work that actually pays.
             </p>
             <div className="flex items-center justify-center gap-4 pt-8">
               <Link href="/auth">

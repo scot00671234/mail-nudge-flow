@@ -22,6 +22,16 @@ Preferred communication style: Simple, everyday language.
 - **Improved navigation** with clearer, everyday language in sidebar
 - **Created help components** for contextual assistance
 - **Added visual guidance** for non-technical users
+- **Simplified terminology** throughout the application:
+  - "Dashboard" → "Overview"
+  - "Nudges" → "Payment Reminders" 
+  - "Email Templates" → "Reminder Messages"
+  - "Analytics" → "Reports"
+- **Added comprehensive onboarding** with welcome guide and first invoice prompt
+- **Enhanced authentication experience** with user-friendly messaging
+- **Improved navigation** with clearer, everyday language in sidebar
+- **Created help components** for contextual assistance
+- **Added visual guidance** for non-technical users
 
 ## System Architecture
 
