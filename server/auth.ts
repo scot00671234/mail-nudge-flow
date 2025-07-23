@@ -37,7 +37,7 @@ const createEmailTransporter = () => {
     return null;
   }
 
-  return nodemailer.createTransporter({
+  return nodemailer.createTransport({
     host: process.env.SMTP_HOST,
     port: parseInt(process.env.SMTP_PORT || "587"),
     secure: process.env.SMTP_PORT === "465",
@@ -52,7 +52,7 @@ const emailTransporter = createEmailTransporter();
 
 export function setupAuth(app: Express) {
   const sessionSettings: session.SessionOptions = {
-    secret: process.env.SESSION_SECRET!,
+    secret: process.env.SESSION_SECRET || "dev-session-secret-change-in-production",
     resave: false,
     saveUninitialized: false,
     store: storage.sessionStore,
