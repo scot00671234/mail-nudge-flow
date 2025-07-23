@@ -47,17 +47,17 @@ export default function Sidebar() {
             const isActive = location === item.href;
             return (
               <Link key={item.name} href={item.href}>
-                <a
+                <span
                   className={cn(
                     isActive
                       ? "bg-primary/10 text-primary border-primary/20"
                       : "text-muted-foreground hover:bg-muted hover:text-foreground border-transparent",
-                    "group flex items-center px-4 py-3 text-sm font-medium rounded-xl border transition-all duration-200"
+                    "group flex items-center px-4 py-3 text-sm font-medium rounded-xl border transition-all duration-200 cursor-pointer"
                   )}
                 >
                   <item.icon className="mr-3 w-5 h-5" />
                   {item.name}
-                </a>
+                </span>
               </Link>
             );
           })}
@@ -85,12 +85,10 @@ export default function Sidebar() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
-              <Link href="/account">
-                <DropdownMenuItem className="cursor-pointer">
-                  <User className="mr-2 h-4 w-4" />
-                  Account Settings
-                </DropdownMenuItem>
-              </Link>
+              <DropdownMenuItem className="cursor-pointer" onClick={() => window.location.href = '/account'}>
+                <User className="mr-2 h-4 w-4" />
+                Account Settings
+              </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem 
                 className="cursor-pointer text-red-600"

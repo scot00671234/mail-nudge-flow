@@ -14,6 +14,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { insertNudgeSettingsSchema } from "@shared/schema";
 import type { NudgeSettings } from "@/lib/types";
 import { z } from "zod";
+import { useEffect } from "react";
 
 type FormData = z.infer<typeof insertNudgeSettingsSchema>;
 
@@ -37,16 +38,18 @@ export default function NudgeSettingsPage() {
   });
 
   // Update form when settings are loaded
-  if (settings && !form.formState.isDirty) {
-    form.reset({
-      firstReminderDays: settings.firstReminderDays ?? 7,
-      secondReminderDays: settings.secondReminderDays ?? 14,
-      finalNoticeDays: settings.finalNoticeDays ?? 21,
-      autoNudgeEnabled: settings.autoNudgeEnabled ?? true,
-      businessHoursOnly: settings.businessHoursOnly ?? true,
-      weekdaysOnly: settings.weekdaysOnly ?? true,
-    });
-  }
+  useEffect(() => {
+    if (settings && !form.formState.isDirty) {
+      form.reset({
+        firstReminderDays: settings.firstReminderDays ?? 7,
+        secondReminderDays: settings.secondReminderDays ?? 14,
+        finalNoticeDays: settings.finalNoticeDays ?? 21,
+        autoNudgeEnabled: settings.autoNudgeEnabled ?? true,
+        businessHoursOnly: settings.businessHoursOnly ?? true,
+        weekdaysOnly: settings.weekdaysOnly ?? true,
+      });
+    }
+  }, [settings, form]);
 
   const updateSettingsMutation = useMutation({
     mutationFn: async (data: FormData) => {
@@ -152,8 +155,8 @@ export default function NudgeSettingsPage() {
                                 min="1" 
                                 max="30" 
                                 className="w-20"
-                                {...field}
-                                onChange={(e) => field.onChange(parseInt(e.target.value))}
+                                value={field.value || ''}
+                                onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
                               />
                             </FormControl>
                             <span className="text-sm text-gray-500">days after due date</span>
@@ -179,8 +182,8 @@ export default function NudgeSettingsPage() {
                                 min="1" 
                                 max="60" 
                                 className="w-20"
-                                {...field}
-                                onChange={(e) => field.onChange(parseInt(e.target.value))}
+                                value={field.value || ''}
+                                onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
                               />
                             </FormControl>
                             <span className="text-sm text-gray-500">days after due date</span>
@@ -206,8 +209,8 @@ export default function NudgeSettingsPage() {
                                 min="1" 
                                 max="90" 
                                 className="w-20"
-                                {...field}
-                                onChange={(e) => field.onChange(parseInt(e.target.value))}
+                                value={field.value || ''}
+                                onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
                               />
                             </FormControl>
                             <span className="text-sm text-gray-500">days after due date</span>
@@ -249,7 +252,7 @@ export default function NudgeSettingsPage() {
                             </div>
                             <FormControl>
                               <Switch
-                                checked={field.value}
+                                checked={field.value || false}
                                 onCheckedChange={field.onChange}
                               />
                             </FormControl>
@@ -270,7 +273,7 @@ export default function NudgeSettingsPage() {
                             </div>
                             <FormControl>
                               <Switch
-                                checked={field.value}
+                                checked={field.value || false}
                                 onCheckedChange={field.onChange}
                               />
                             </FormControl>
@@ -291,7 +294,7 @@ export default function NudgeSettingsPage() {
                             </div>
                             <FormControl>
                               <Switch
-                                checked={field.value}
+                                checked={field.value || false}
                                 onCheckedChange={field.onChange}
                               />
                             </FormControl>
