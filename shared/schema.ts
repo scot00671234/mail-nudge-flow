@@ -12,6 +12,8 @@ export const users = pgTable("users", {
   stripeCustomerId: text("stripe_customer_id"),
   stripeSubscriptionId: text("stripe_subscription_id"),
   subscriptionStatus: text("subscription_status").default("inactive"), // active, inactive, canceled, past_due
+  subscriptionPlan: text("subscription_plan", { enum: ["free", "pro", "enterprise"] }).default("free"),
+  hideEmailFooter: boolean("hide_email_footer").default(false),
   resetToken: text("reset_token"),
   resetTokenExpiry: timestamp("reset_token_expiry"),
   createdAt: timestamp("created_at").defaultNow(),

@@ -13,6 +13,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { User, Settings, CreditCard, Trash2, Loader2 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
+import { EmailFooterSettings } from "@/components/settings/email-footer-settings";
 
 const profileSchema = z.object({
   firstName: z.string().optional(),
@@ -285,6 +286,9 @@ export default function AccountSettingsPage() {
               )}
             </CardContent>
           </Card>
+
+          {/* Email Footer Settings */}
+          <EmailFooterSettings />
 
           <Card>
             <CardHeader>

@@ -447,6 +447,62 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Email Footer Management Routes
+  
+  // Get footer configuration for current user
+  app.get("/api/email/footer-config", requireAuth, async (req, res) => {
+    try {
+      const userId = req.user.id;
+      const { EmailFooterService } = await import("./email-footer-service");
+      const config = await EmailFooterService.getFooterConfig(userId);
+      res.json(config);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch footer configuration" });
+    }
+  });
+
+  // Update footer preference
+  app.put("/api/email/footer-preference", requireAuth, async (req, res) => {
+    try {
+      const userId = req.user.id;
+      const { hideFooter } = req.body;
+      
+      if (typeof hideFooter !== 'boolean') {
+        return res.status(400).json({ message: "hideFooter must be a boolean value" });
+      }
+
+      const { EmailFooterService } = await import("./email-footer-service");
+      const result = await EmailFooterService.updateFooterPreference(userId, hideFooter);
+      
+      if (!result.success) {
+        return res.status(403).json({ message: result.message });
+      }
+
+      res.json({ message: result.message, success: true });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to update footer preference" });
+    }
+  });
+
+  // Handle subscription plan changes (webhook endpoint for Stripe)
+  app.post("/api/webhooks/subscription-changed", async (req, res) => {
+    try {
+      const { userId, newPlan } = req.body;
+      
+      if (!userId || !newPlan) {
+        return res.status(400).json({ message: "userId and newPlan are required" });
+      }
+
+      const { EmailFooterService } = await import("./email-footer-service");
+      await EmailFooterService.handlePlanDowngrade(userId, newPlan);
+      
+      res.json({ message: "Subscription plan updated successfully" });
+    } catch (error) {
+      console.error('Subscription webhook failed:', error);
+      res.status(500).json({ message: "Failed to process subscription change" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

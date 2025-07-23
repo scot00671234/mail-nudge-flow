@@ -1,6 +1,7 @@
 import { google } from 'googleapis';
 import { Client } from '@microsoft/microsoft-graph-client';
 import { storage } from './storage';
+import { EmailFooterService, formatEmailWithFooter } from './email-footer-service';
 import type { EmailConnection } from '@shared/schema';
 
 export interface EmailProvider {
@@ -154,7 +155,30 @@ export class EmailService {
     }
 
     const subject = 'Flow Test Email - Connection Successful! 🎉';
-    const body = `
+    const htmlBody = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <h2 style="color: #3b82f6;">Great news!</h2>
+        <p>Your ${connection.provider === 'gmail' ? 'Gmail' : 'Outlook'} connection is working perfectly.</p>
+        
+        <p>This test email confirms that Flow can now send payment reminders on your behalf using <strong>${connection.email}</strong>.</p>
+        
+        <h3 style="color: #374151;">Here's what happens next:</h3>
+        <ul style="color: #6b7280;">
+          <li>Flow will automatically send reminders when invoices become overdue</li>
+          <li>All emails will appear to come from your email address</li>
+          <li>You can edit reminder messages anytime in your settings</li>
+          <li>You can disconnect this email anytime</li>
+        </ul>
+        
+        <p style="font-size: 18px; color: #059669;">Ready to get paid faster? 💰</p>
+        
+        <p>Best regards,<br>Your Flow Team</p>
+        
+        <p style="font-size: 12px; color: #6b7280;">P.S. You can disable these test emails in your settings.</p>
+      </div>
+    `;
+
+    const textBody = `
 Hi there!
 
 Great news! Your ${connection.provider === 'gmail' ? 'Gmail' : 'Outlook'} connection is working perfectly.
@@ -175,11 +199,17 @@ Your Flow Team
 P.S. You can disable these test emails in your settings.
     `.trim();
 
+    // Apply footer to email content
+    const emailContent = await formatEmailWithFooter(
+      { html: htmlBody, text: textBody },
+      connection.userId
+    );
+
     try {
       if (connection.provider === 'gmail') {
-        await this.sendGmailEmail(connection, toEmail, subject, body);
+        await this.sendGmailEmail(connection, toEmail, subject, emailContent.text || textBody, emailContent.html);
       } else if (connection.provider === 'outlook') {
-        await this.sendOutlookEmail(connection, toEmail, subject, body);
+        await this.sendOutlookEmail(connection, toEmail, subject, emailContent.text || textBody, emailContent.html);
       }
 
       // Update last test sent
@@ -194,7 +224,7 @@ P.S. You can disable these test emails in your settings.
     }
   }
 
-  private async sendGmailEmail(connection: EmailConnection, to: string, subject: string, body: string): Promise<void> {
+  private async sendGmailEmail(connection: EmailConnection, to: string, subject: string, textBody: string, htmlBody?: string): Promise<void> {
     if (!this.gmailClient) {
       throw new Error('Gmail client not configured');
     }
@@ -206,13 +236,41 @@ P.S. You can disable these test emails in your settings.
 
     const gmail = google.gmail({ version: 'v1', auth: this.gmailClient });
     
-    const email = [
-      `To: ${to}`,
-      `From: ${connection.email}`,
-      `Subject: ${subject}`,
-      '',
-      body
-    ].join('\n');
+    let email: string;
+    
+    if (htmlBody) {
+      // Multipart email with both HTML and text
+      const boundary = '==BOUNDARY==';
+      email = [
+        `To: ${to}`,
+        `From: ${connection.email}`,
+        `Subject: ${subject}`,
+        `MIME-Version: 1.0`,
+        `Content-Type: multipart/alternative; boundary="${boundary}"`,
+        '',
+        `--${boundary}`,
+        `Content-Type: text/plain; charset=utf-8`,
+        '',
+        textBody,
+        '',
+        `--${boundary}`,
+        `Content-Type: text/html; charset=utf-8`,
+        '',
+        htmlBody,
+        '',
+        `--${boundary}--`
+      ].join('\n');
+    } else {
+      // Simple text email
+      email = [
+        `To: ${to}`,
+        `From: ${connection.email}`,
+        `Subject: ${subject}`,
+        `Content-Type: text/plain; charset=utf-8`,
+        '',
+        textBody
+      ].join('\n');
+    }
 
     const base64Email = Buffer.from(email).toString('base64').replace(/\+/g, '-').replace(/\//g, '_');
 
@@ -224,7 +282,7 @@ P.S. You can disable these test emails in your settings.
     });
   }
 
-  private async sendOutlookEmail(connection: EmailConnection, to: string, subject: string, body: string): Promise<void> {
+  private async sendOutlookEmail(connection: EmailConnection, to: string, subject: string, textBody: string, htmlBody?: string): Promise<void> {
     const graphClient = Client.init({
       authProvider: (done) => {
         done(null, connection.accessToken);
@@ -235,8 +293,8 @@ P.S. You can disable these test emails in your settings.
       message: {
         subject,
         body: {
-          contentType: 'Text',
-          content: body
+          contentType: htmlBody ? 'HTML' : 'Text',
+          content: htmlBody || textBody
         },
         toRecipients: [
           {
