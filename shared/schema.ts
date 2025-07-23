@@ -79,6 +79,20 @@ export const nudgeSettings = pgTable("nudge_settings", {
   weekdaysOnly: boolean("weekdays_only").default(true),
 });
 
+export const emailConnections = pgTable("email_connections", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull(),
+  provider: text("provider").notNull(), // gmail, outlook
+  email: text("email").notNull(),
+  accessToken: text("access_token"),
+  refreshToken: text("refresh_token"),
+  expiresAt: timestamp("expires_at"),
+  isActive: boolean("is_active").default(true),
+  lastTestSent: timestamp("last_test_sent"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
@@ -118,6 +132,12 @@ export const insertNudgeSettingsSchema = createInsertSchema(nudgeSettings).omit(
   id: true,
 });
 
+export const insertEmailConnectionSchema = createInsertSchema(emailConnections).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 // Types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -139,3 +159,6 @@ export type InsertActivity = z.infer<typeof insertActivitySchema>;
 
 export type NudgeSettings = typeof nudgeSettings.$inferSelect;
 export type InsertNudgeSettings = z.infer<typeof insertNudgeSettingsSchema>;
+
+export type EmailConnection = typeof emailConnections.$inferSelect;
+export type InsertEmailConnection = z.infer<typeof insertEmailConnectionSchema>;

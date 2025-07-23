@@ -10,6 +10,7 @@ import UpcomingNudges from "@/components/dashboard/upcoming-nudges";
 import UploadModal from "@/components/invoices/upload-modal";
 import WelcomeGuide from "@/components/onboarding/welcome-guide";
 import FirstInvoicePrompt from "@/components/onboarding/first-invoice-prompt";
+import { EmailConnectionBanner } from "@/components/dashboard/email-connection-banner";
 import type { DashboardMetrics } from "@/lib/types";
 
 export default function Dashboard() {
@@ -97,6 +98,11 @@ export default function Dashboard() {
         ) : metrics ? (
           <MetricsCards metrics={metrics} />
         ) : null}
+
+        {/* Email Connection Banner */}
+        <div className="mb-8">
+          <EmailConnectionBanner />
+        </div>
 
         {/* First Invoice Prompt for new users */}
         {showFirstInvoicePrompt && metrics && metrics.outstandingInvoices === 0 && (

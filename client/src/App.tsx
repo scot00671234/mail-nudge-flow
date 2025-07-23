@@ -15,6 +15,7 @@ import EmailTemplates from "@/pages/email-templates";
 import NudgeSettings from "@/pages/nudge-settings";
 import Analytics from "@/pages/analytics";
 import AccountSettings from "@/pages/account-settings";
+import EmailSetup from "@/pages/email-setup";
 import Sidebar from "@/components/layout/sidebar";
 
 function Router() {
@@ -29,6 +30,7 @@ function Router() {
       <ProtectedRoute path="/nudge-settings" component={NudgeSettings} />
       <ProtectedRoute path="/analytics" component={Analytics} />
       <ProtectedRoute path="/account" component={AccountSettings} />
+      <ProtectedRoute path="/email-setup" component={EmailSetup} />
       <Route path="/" component={LandingPage} />
       <Route component={NotFound} />
     </Switch>

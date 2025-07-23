@@ -19,6 +19,7 @@ const navigation = [
   { name: "Overview", href: "/dashboard", icon: BarChart3 },
   { name: "My Invoices", href: "/invoices", icon: FileText },
   { name: "Customers", href: "/customers", icon: Users },
+  { name: "Email Setup", href: "/email-setup", icon: Mail },
   { name: "Reminder Messages", href: "/email-templates", icon: Mail },
   { name: "Reminder Settings", href: "/nudge-settings", icon: Settings },
   { name: "Reports", href: "/analytics", icon: PieChart },

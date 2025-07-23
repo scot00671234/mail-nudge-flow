@@ -2,6 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth } from "./auth";
+import { emailService, EMAIL_PROVIDERS } from "./email-service";
 import Stripe from "stripe";
 import { 
   insertCustomerSchema, 
@@ -331,6 +332,118 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid settings data", errors: error.errors });
       }
       res.status(500).json({ message: "Failed to update nudge settings" });
+    }
+  });
+
+  // Email Integration Routes
+  
+  // Get available email providers
+  app.get("/api/email/providers", requireAuth, (req, res) => {
+    res.json(EMAIL_PROVIDERS);
+  });
+
+  // Get user's email connections
+  app.get("/api/email/connections", requireAuth, async (req, res) => {
+    try {
+      const userId = req.user.id;
+      const connections = await storage.getEmailConnections(userId);
+      res.json(connections);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch email connections" });
+    }
+  });
+
+  // Initiate OAuth flow
+  app.get("/api/oauth/:provider/auth", requireAuth, async (req, res) => {
+    try {
+      const { provider } = req.params;
+      let authUrl: string;
+
+      if (provider === 'gmail') {
+        authUrl = emailService.getGmailAuthUrl();
+      } else if (provider === 'outlook') {
+        authUrl = emailService.getOutlookAuthUrl();
+      } else {
+        return res.status(400).json({ message: "Unsupported email provider" });
+      }
+
+      // Store user ID in session for callback
+      req.session.oauthUserId = req.user.id;
+      res.json({ authUrl });
+    } catch (error) {
+      console.error('OAuth initiation failed:', error);
+      res.status(500).json({ message: error instanceof Error ? error.message : "OAuth setup failed" });
+    }
+  });
+
+  // OAuth callback handlers
+  app.get("/api/oauth/gmail/callback", async (req, res) => {
+    try {
+      const { code, error } = req.query;
+      if (error) {
+        return res.redirect(`/?error=${encodeURIComponent('OAuth permission denied')}`);
+      }
+      if (!code || !req.session.oauthUserId) {
+        return res.redirect(`/?error=${encodeURIComponent('OAuth callback failed')}`);
+      }
+
+      const connection = await emailService.handleGmailCallback(code as string, req.session.oauthUserId);
+      delete req.session.oauthUserId;
+      
+      res.redirect(`/?email_connected=gmail&email=${encodeURIComponent(connection.email)}`);
+    } catch (error) {
+      console.error('Gmail callback failed:', error);
+      res.redirect(`/?error=${encodeURIComponent('Failed to connect Gmail account')}`);
+    }
+  });
+
+  app.get("/api/oauth/outlook/callback", async (req, res) => {
+    try {
+      const { code, error } = req.query;
+      if (error) {
+        return res.redirect(`/?error=${encodeURIComponent('OAuth permission denied')}`);
+      }
+      if (!code || !req.session.oauthUserId) {
+        return res.redirect(`/?error=${encodeURIComponent('OAuth callback failed')}`);
+      }
+
+      const connection = await emailService.handleOutlookCallback(code as string, req.session.oauthUserId);
+      delete req.session.oauthUserId;
+      
+      res.redirect(`/?email_connected=outlook&email=${encodeURIComponent(connection.email)}`);
+    } catch (error) {
+      console.error('Outlook callback failed:', error);
+      res.redirect(`/?error=${encodeURIComponent('Failed to connect Outlook account')}`);
+    }
+  });
+
+  // Send test email
+  app.post("/api/email/test", requireAuth, async (req, res) => {
+    try {
+      const { connectionId, testEmail } = req.body;
+      if (!connectionId || !testEmail) {
+        return res.status(400).json({ message: "Connection ID and test email are required" });
+      }
+
+      await emailService.sendTestEmail(connectionId, testEmail);
+      res.json({ message: "Test email sent successfully!" });
+    } catch (error) {
+      console.error('Test email failed:', error);
+      res.status(500).json({ message: error instanceof Error ? error.message : "Failed to send test email" });
+    }
+  });
+
+  // Disconnect email provider
+  app.delete("/api/email/connections/:id", requireAuth, async (req, res) => {
+    try {
+      const connectionId = parseInt(req.params.id);
+      const success = await storage.deleteEmailConnection(connectionId);
+      if (!success) {
+        return res.status(404).json({ message: "Email connection not found" });
+      }
+      res.json({ message: "Email connection removed successfully" });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to remove email connection" });
     }
   });
 

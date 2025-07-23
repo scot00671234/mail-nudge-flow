@@ -6,6 +6,7 @@ import {
   nudgeSchedules, 
   activities, 
   nudgeSettings,
+  emailConnections,
   type User,
   type Customer, 
   type Invoice, 
@@ -13,14 +14,18 @@ import {
   type NudgeSchedule, 
   type Activity, 
   type NudgeSettings,
+  type EmailConnection,
   type InsertUser,
   type InsertCustomer, 
   type InsertInvoice, 
   type InsertEmailTemplate, 
   type InsertNudgeSchedule, 
   type InsertActivity, 
-  type InsertNudgeSettings
+  type InsertNudgeSettings,
+  type InsertEmailConnection
 } from "@shared/schema";
+import { db } from "./db";
+import { eq, desc, and, gte, lte } from "drizzle-orm";
 import session from "express-session";
 import createMemoryStore from "memorystore";
 
@@ -77,6 +82,14 @@ export interface IStorage {
   // Nudge Settings
   getNudgeSettings(): Promise<NudgeSettings>;
   updateNudgeSettings(settings: Partial<InsertNudgeSettings>): Promise<NudgeSettings>;
+
+  // Email Connections
+  getEmailConnections(userId: number): Promise<EmailConnection[]>;
+  getEmailConnection(id: number): Promise<EmailConnection | undefined>;
+  getActiveEmailConnection(userId: number): Promise<EmailConnection | undefined>;
+  createEmailConnection(connection: InsertEmailConnection): Promise<EmailConnection>;
+  updateEmailConnection(id: number, connection: Partial<InsertEmailConnection>): Promise<EmailConnection | undefined>;
+  deleteEmailConnection(id: number): Promise<boolean>;
 
   // Dashboard metrics
   getDashboardMetrics(): Promise<{
@@ -516,4 +529,299 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+export class DatabaseStorage implements IStorage {
+  public sessionStore: session.Store;
+
+  constructor() {
+    this.sessionStore = new MemoryStore({ checkPeriod: 86400000 });
+  }
+
+  // Users
+  async getUser(id: number): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user;
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user;
+  }
+
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user;
+  }
+
+  async getUserByResetToken(token: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.resetToken, token));
+    return user;
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const [user] = await db.insert(users).values(insertUser).returning();
+    return user;
+  }
+
+  async updateUser(id: number, updateUser: Partial<InsertUser>): Promise<User | undefined> {
+    const [user] = await db.update(users).set(updateUser).where(eq(users.id, id)).returning();
+    return user;
+  }
+
+  async updateUserStripeInfo(id: number, stripeCustomerId: string, stripeSubscriptionId: string): Promise<User | undefined> {
+    const [user] = await db.update(users)
+      .set({ stripeCustomerId, stripeSubscriptionId })
+      .where(eq(users.id, id))
+      .returning();
+    return user;
+  }
+
+  async setResetToken(id: number, token: string, expiry: Date): Promise<User | undefined> {
+    const [user] = await db.update(users)
+      .set({ resetToken: token, resetTokenExpiry: expiry })
+      .where(eq(users.id, id))
+      .returning();
+    return user;
+  }
+
+  async clearResetToken(id: number): Promise<User | undefined> {
+    const [user] = await db.update(users)
+      .set({ resetToken: null, resetTokenExpiry: null })
+      .where(eq(users.id, id))
+      .returning();
+    return user;
+  }
+
+  // Email Connections
+  async getEmailConnections(userId: number): Promise<EmailConnection[]> {
+    return await db.select().from(emailConnections).where(eq(emailConnections.userId, userId));
+  }
+
+  async getEmailConnection(id: number): Promise<EmailConnection | undefined> {
+    const [connection] = await db.select().from(emailConnections).where(eq(emailConnections.id, id));
+    return connection;
+  }
+
+  async getActiveEmailConnection(userId: number): Promise<EmailConnection | undefined> {
+    const [connection] = await db.select().from(emailConnections)
+      .where(and(eq(emailConnections.userId, userId), eq(emailConnections.isActive, true)));
+    return connection;
+  }
+
+  async createEmailConnection(insertConnection: InsertEmailConnection): Promise<EmailConnection> {
+    const [connection] = await db.insert(emailConnections).values(insertConnection).returning();
+    return connection;
+  }
+
+  async updateEmailConnection(id: number, updateConnection: Partial<InsertEmailConnection>): Promise<EmailConnection | undefined> {
+    const [connection] = await db.update(emailConnections)
+      .set({ ...updateConnection, updatedAt: new Date() })
+      .where(eq(emailConnections.id, id))
+      .returning();
+    return connection;
+  }
+
+  async deleteEmailConnection(id: number): Promise<boolean> {
+    const result = await db.delete(emailConnections).where(eq(emailConnections.id, id));
+    return result.rowCount ? result.rowCount > 0 : false;
+  }
+
+  // Customers
+  async getCustomers(): Promise<Customer[]> {
+    return await db.select().from(customers).orderBy(desc(customers.createdAt));
+  }
+
+  async getCustomer(id: number): Promise<Customer | undefined> {
+    const [customer] = await db.select().from(customers).where(eq(customers.id, id));
+    return customer;
+  }
+
+  async createCustomer(insertCustomer: InsertCustomer): Promise<Customer> {
+    const [customer] = await db.insert(customers).values(insertCustomer).returning();
+    return customer;
+  }
+
+  async updateCustomer(id: number, updateCustomer: Partial<InsertCustomer>): Promise<Customer | undefined> {
+    const [customer] = await db.update(customers).set(updateCustomer).where(eq(customers.id, id)).returning();
+    return customer;
+  }
+
+  async deleteCustomer(id: number): Promise<boolean> {
+    const result = await db.delete(customers).where(eq(customers.id, id));
+    return result.rowCount ? result.rowCount > 0 : false;
+  }
+
+  // Invoices
+  async getInvoices(): Promise<Invoice[]> {
+    return await db.select().from(invoices).orderBy(desc(invoices.createdAt));
+  }
+
+  async getInvoice(id: number): Promise<Invoice | undefined> {
+    const [invoice] = await db.select().from(invoices).where(eq(invoices.id, id));
+    return invoice;
+  }
+
+  async getInvoicesByCustomer(customerId: number): Promise<Invoice[]> {
+    return await db.select().from(invoices).where(eq(invoices.customerId, customerId));
+  }
+
+  async getOverdueInvoices(): Promise<Invoice[]> {
+    const today = new Date();
+    return await db.select().from(invoices)
+      .where(and(
+        lte(invoices.dueDate, today),
+        eq(invoices.status, "pending")
+      ));
+  }
+
+  async createInvoice(insertInvoice: InsertInvoice): Promise<Invoice> {
+    const [invoice] = await db.insert(invoices).values(insertInvoice).returning();
+    return invoice;
+  }
+
+  async updateInvoice(id: number, updateInvoice: Partial<InsertInvoice>): Promise<Invoice | undefined> {
+    const [invoice] = await db.update(invoices).set(updateInvoice).where(eq(invoices.id, id)).returning();
+    return invoice;
+  }
+
+  async deleteInvoice(id: number): Promise<boolean> {
+    const result = await db.delete(invoices).where(eq(invoices.id, id));
+    return result.rowCount ? result.rowCount > 0 : false;
+  }
+
+  // Email Templates
+  async getEmailTemplates(): Promise<EmailTemplate[]> {
+    return await db.select().from(emailTemplates).orderBy(desc(emailTemplates.createdAt));
+  }
+
+  async getEmailTemplate(id: number): Promise<EmailTemplate | undefined> {
+    const [template] = await db.select().from(emailTemplates).where(eq(emailTemplates.id, id));
+    return template;
+  }
+
+  async getEmailTemplateByType(type: string): Promise<EmailTemplate | undefined> {
+    const [template] = await db.select().from(emailTemplates).where(eq(emailTemplates.type, type));
+    return template;
+  }
+
+  async createEmailTemplate(insertTemplate: InsertEmailTemplate): Promise<EmailTemplate> {
+    const [template] = await db.insert(emailTemplates).values(insertTemplate).returning();
+    return template;
+  }
+
+  async updateEmailTemplate(id: number, updateTemplate: Partial<InsertEmailTemplate>): Promise<EmailTemplate | undefined> {
+    const [template] = await db.update(emailTemplates).set(updateTemplate).where(eq(emailTemplates.id, id)).returning();
+    return template;
+  }
+
+  async deleteEmailTemplate(id: number): Promise<boolean> {
+    const result = await db.delete(emailTemplates).where(eq(emailTemplates.id, id));
+    return result.rowCount ? result.rowCount > 0 : false;
+  }
+
+  // Activities
+  async getActivities(limit: number = 10): Promise<Activity[]> {
+    return await db.select().from(activities).orderBy(desc(activities.createdAt)).limit(limit);
+  }
+
+  async createActivity(insertActivity: InsertActivity): Promise<Activity> {
+    const [activity] = await db.insert(activities).values(insertActivity).returning();
+    return activity;
+  }
+
+  // Nudge Settings
+  async getNudgeSettings(): Promise<NudgeSettings> {
+    const [settings] = await db.select().from(nudgeSettings).limit(1);
+    if (!settings) {
+      // Create default settings
+      const [defaultSettings] = await db.insert(nudgeSettings).values({}).returning();
+      return defaultSettings;
+    }
+    return settings;
+  }
+
+  async updateNudgeSettings(updateSettings: Partial<InsertNudgeSettings>): Promise<NudgeSettings> {
+    let [settings] = await db.select().from(nudgeSettings).limit(1);
+    if (!settings) {
+      [settings] = await db.insert(nudgeSettings).values(updateSettings).returning();
+    } else {
+      [settings] = await db.update(nudgeSettings).set(updateSettings).where(eq(nudgeSettings.id, settings.id)).returning();
+    }
+    return settings;
+  }
+
+  // Nudge Schedules
+  async getNudgeSchedules(): Promise<NudgeSchedule[]> {
+    return await db.select().from(nudgeSchedules).orderBy(desc(nudgeSchedules.createdAt));
+  }
+
+  async getNudgeSchedule(id: number): Promise<NudgeSchedule | undefined> {
+    const [schedule] = await db.select().from(nudgeSchedules).where(eq(nudgeSchedules.id, id));
+    return schedule;
+  }
+
+  async getUpcomingNudges(): Promise<NudgeSchedule[]> {
+    return await db.select().from(nudgeSchedules)
+      .where(and(
+        eq(nudgeSchedules.status, "scheduled"),
+        lte(nudgeSchedules.scheduledDate, new Date())
+      ));
+  }
+
+  async createNudgeSchedule(insertSchedule: InsertNudgeSchedule): Promise<NudgeSchedule> {
+    const [schedule] = await db.insert(nudgeSchedules).values(insertSchedule).returning();
+    return schedule;
+  }
+
+  async updateNudgeSchedule(id: number, updateSchedule: Partial<InsertNudgeSchedule>): Promise<NudgeSchedule | undefined> {
+    const [schedule] = await db.update(nudgeSchedules).set(updateSchedule).where(eq(nudgeSchedules.id, id)).returning();
+    return schedule;
+  }
+
+  async deleteNudgeSchedule(id: number): Promise<boolean> {
+    const result = await db.delete(nudgeSchedules).where(eq(nudgeSchedules.id, id));
+    return result.rowCount ? result.rowCount > 0 : false;
+  }
+
+  // Dashboard Metrics
+  async getDashboardMetrics(): Promise<{
+    outstandingInvoices: number;
+    outstandingValue: number;
+    responseRate: number;
+    nudgesSent: number;
+    avgCollectionTime: number;
+  }> {
+    const allInvoices = await db.select().from(invoices);
+    const outstandingInvoices = allInvoices.filter(inv => inv.status !== "paid");
+    const outstandingValue = outstandingInvoices.reduce((sum, inv) => sum + parseFloat(inv.amount), 0);
+    
+    const thisMonth = new Date();
+    thisMonth.setDate(1);
+    const schedules = await db.select().from(nudgeSchedules)
+      .where(and(
+        eq(nudgeSchedules.status, "sent"),
+        gte(nudgeSchedules.sentDate, thisMonth)
+      ));
+    const nudgesSent = schedules.length;
+
+    const paidInvoices = allInvoices.filter(inv => inv.status === "paid" && inv.paidDate);
+    const avgCollectionTime = paidInvoices.length > 0 
+      ? paidInvoices.reduce((sum, inv) => {
+          const diffTime = new Date(inv.paidDate!).getTime() - new Date(inv.issueDate).getTime();
+          return sum + Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        }, 0) / paidInvoices.length
+      : 0;
+
+    // Mock response rate calculation
+    const responseRate = 78;
+
+    return {
+      outstandingInvoices: outstandingInvoices.length,
+      outstandingValue,
+      responseRate,
+      nudgesSent,
+      avgCollectionTime: Math.round(avgCollectionTime),
+    };
+  }
+}
+
+export const storage = new DatabaseStorage();
