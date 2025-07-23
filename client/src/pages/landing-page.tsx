@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Check, ArrowRight, Zap, Shield, BarChart3, Mail, Users, Clock } from "lucide-react";
+import { Check, ArrowRight, Zap, Shield, BarChart3, Mail, Users, Clock, Star, TrendingUp } from "lucide-react";
 import { Link } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { Redirect } from "wouter";

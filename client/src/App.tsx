@@ -5,7 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/hooks/use-auth";
 import { ProtectedRoute } from "@/lib/protected-route";
-import LandingPage from "@/pages/landing-page";
+import LandingPage from "@/pages/landing-page-new";
 import AuthPage from "@/pages/auth-page";
 import NotFound from "@/pages/not-found";
 import Dashboard from "@/pages/dashboard";

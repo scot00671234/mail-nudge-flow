@@ -4,28 +4,30 @@
 
 :root {
   --background: hsl(0, 0%, 100%);
-  --foreground: hsl(20, 14.3%, 4.1%);
-  --muted: hsl(60, 4.8%, 95.9%);
-  --muted-foreground: hsl(25, 5.3%, 44.7%);
+  --foreground: hsl(210, 11%, 15%);
+  --muted: hsl(210, 11.5%, 96%);
+  --muted-foreground: hsl(210, 7%, 46%);
   --popover: hsl(0, 0%, 100%);
-  --popover-foreground: hsl(20, 14.3%, 4.1%);
+  --popover-foreground: hsl(210, 11%, 15%);
   --card: hsl(0, 0%, 100%);
-  --card-foreground: hsl(20, 14.3%, 4.1%);
-  --border: hsl(20, 5.9%, 90%);
-  --input: hsl(20, 5.9%, 90%);
-  --primary: hsl(219, 91%, 62%);
+  --card-foreground: hsl(210, 11%, 15%);
+  --border: hsl(210, 12%, 92%);
+  --input: hsl(210, 12%, 95%);
+  --primary: hsl(214, 84%, 56%);
   --primary-foreground: hsl(0, 0%, 100%);
-  --secondary: hsl(60, 4.8%, 95.9%);
-  --secondary-foreground: hsl(24, 9.8%, 10%);
-  --accent: hsl(60, 4.8%, 95.9%);
-  --accent-foreground: hsl(24, 9.8%, 10%);
+  --secondary: hsl(210, 11.5%, 96%);
+  --secondary-foreground: hsl(210, 11%, 15%);
+  --accent: hsl(210, 11.5%, 96%);
+  --accent-foreground: hsl(210, 11%, 15%);
   --destructive: hsl(0, 84.2%, 60.2%);
-  --destructive-foreground: hsl(60, 9.1%, 97.8%);
-  --ring: hsl(20, 14.3%, 4.1%);
-  --radius: 0.5rem;
+  --destructive-foreground: hsl(0, 0%, 100%);
+  --ring: hsl(214, 84%, 56%);
+  --radius: 8px;
   
   /* Flow specific colors */
-  --flow-blue: hsl(219, 91%, 62%);
+  --flow-blue: hsl(214, 84%, 56%);
+  --flow-blue-light: hsl(214, 84%, 96%);
+  --flow-blue-subtle: hsl(214, 84%, 88%);
   --flow-success: hsl(142, 76%, 36%);
   --flow-warning: hsl(43, 96%, 56%);
   --flow-danger: hsl(0, 84%, 60%);
@@ -67,7 +69,25 @@
 
   body {
     @apply font-sans antialiased bg-background text-foreground;
-    font-family: 'Inter', sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    letter-spacing: -0.011em;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-medium tracking-tight;
+  }
+  
+  .hero-heading {
+    @apply text-5xl md:text-7xl font-medium tracking-tighter;
+    line-height: 1.1;
+  }
+  
+  .section-heading {
+    @apply text-3xl md:text-4xl font-medium tracking-tight;
+  }
+  
+  .subtitle {
+    @apply text-lg text-muted-foreground leading-relaxed;
   }
 }
 
