@@ -34,7 +34,10 @@ type ProfileForm = z.infer<typeof profileSchema>;
 type PasswordForm = z.infer<typeof passwordSchema>;
 
 export default function AccountSettingsPage() {
-  const { user, updateProfileMutation, changePasswordMutation } = useAuth();
+  const auth = useAuth();
+  const { user } = auth;
+  const updateProfileMutation = auth.updateProfileMutation;
+  const changePasswordMutation = auth.changePasswordMutation;
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("profile");
 
