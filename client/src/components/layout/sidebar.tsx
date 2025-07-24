@@ -30,15 +30,15 @@ export default function Sidebar() {
   const { user, logoutMutation } = useAuth();
 
   return (
-    <div className="hidden md:flex md:w-72 md:flex-col">
-      <div className="flex flex-col flex-grow pt-8 pb-4 overflow-y-auto bg-background border-r border-border/40">
+    <div className="hidden md:flex md:w-60 md:flex-col">
+      <div className="flex flex-col h-full bg-background border-r border-border/50">
         {/* Logo */}
-        <div className="flex items-center flex-shrink-0 px-6">
-          <img src="/logo.svg" alt="Flow Logo" className="h-8" />
+        <div className="flex items-center px-6 py-8">
+          <img src="/logo.svg" alt="Flow Logo" className="h-7" />
         </div>
         
         {/* Navigation */}
-        <nav className="mt-12 flex-1 px-4 space-y-2">
+        <nav className="flex-1 px-4 space-y-1">
           {navigation.map((item) => {
             const isActive = location === item.href;
             return (
@@ -46,12 +46,12 @@ export default function Sidebar() {
                 <span
                   className={cn(
                     isActive
-                      ? "bg-primary/10 text-primary border-primary/20"
-                      : "text-muted-foreground hover:bg-muted hover:text-foreground border-transparent",
-                    "group flex items-center px-4 py-3 text-sm font-medium rounded-xl border transition-all duration-200 cursor-pointer"
+                      ? "bg-primary text-primary-foreground"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                    "group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-150 cursor-pointer"
                   )}
                 >
-                  <item.icon className="mr-3 w-5 h-5" />
+                  <item.icon className="mr-3 w-4 h-4" />
                   {item.name}
                 </span>
               </Link>
@@ -60,7 +60,7 @@ export default function Sidebar() {
         </nav>
         
         {/* User Profile */}
-        <div className="flex-shrink-0 px-4 py-6 border-t border-border/40">
+        <div className="px-4 py-6 border-t border-border/50">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="w-full justify-start p-0 h-auto rounded-xl">

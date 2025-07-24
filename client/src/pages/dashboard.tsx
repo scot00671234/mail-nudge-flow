@@ -59,25 +59,23 @@ export default function Dashboard() {
   return (
     <>
       {/* Header */}
-      <header className="bg-background border-b border-border/40">
-        <div className="px-6 lg:px-8">
-          <div className="flex justify-between items-center py-8">
-            <div className="flex items-center">
-              <div>
-                <h1 className="text-3xl font-medium tracking-tight text-foreground">Overview</h1>
-                <p className="text-muted-foreground mt-1">See how your invoices are doing</p>
-              </div>
+      <header className="flex-shrink-0 bg-background border-b border-border/50">
+        <div className="px-8 py-8">
+          <div className="flex justify-between items-center">
+            <div>
+              <h1 className="text-2xl font-semibold text-foreground">Overview</h1>
+              <p className="text-muted-foreground text-sm mt-1">See how your invoices are doing</p>
             </div>
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-3">
               <Button 
                 onClick={handleUploadInvoice}
-                className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full px-6"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl px-5 py-2.5 text-sm font-medium"
               >
                 <Plus className="mr-2 w-4 h-4" />
                 New Invoice
               </Button>
-              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground rounded-full">
-                <Bell className="w-5 h-5" />
+              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground rounded-xl">
+                <Bell className="w-4 h-4" />
               </Button>
             </div>
           </div>
@@ -85,13 +83,13 @@ export default function Dashboard() {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto p-6 lg:p-8 bg-background">
+      <main className="flex-1 overflow-y-auto px-8 py-6 bg-background">
         {/* Metrics Cards */}
         {metricsLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
             {[...Array(4)].map((_, i) => (
-              <div key={i} className="bg-card rounded-2xl border border-border/40 p-8 animate-pulse">
-                <div className="h-20 bg-muted rounded-xl"></div>
+              <div key={i} className="bg-card rounded-xl border border-border/50 p-6 animate-pulse">
+                <div className="h-16 bg-muted rounded-lg"></div>
               </div>
             ))}
           </div>
@@ -121,7 +119,7 @@ export default function Dashboard() {
           </div>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Recent Invoices */}
           <div className="lg:col-span-2">
             <RecentInvoices />
@@ -138,7 +136,7 @@ export default function Dashboard() {
         </div>
 
         {/* Upcoming Nudges */}
-        <div className="mt-8">
+        <div className="mt-6">
           <UpcomingNudges />
         </div>
       </main>

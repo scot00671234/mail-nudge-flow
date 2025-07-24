@@ -39,9 +39,9 @@ function Router() {
 
 function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex min-h-screen bg-background">
       <Sidebar />
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1">
         {children}
       </div>
     </div>

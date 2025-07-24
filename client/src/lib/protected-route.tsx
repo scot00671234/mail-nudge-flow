@@ -32,9 +32,9 @@ export function ProtectedRoute({
 
   return (
     <Route path={path}>
-      <div className="flex h-screen overflow-hidden">
+      <div className="flex min-h-screen bg-background">
         <Sidebar />
-        <div className="flex-1 overflow-hidden">
+        <div className="flex-1 flex flex-col">
           <Component />
         </div>
       </div>

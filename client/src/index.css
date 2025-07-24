@@ -4,33 +4,34 @@
 
 :root {
   --background: hsl(0, 0%, 100%);
-  --foreground: hsl(210, 11%, 15%);
-  --muted: hsl(210, 11.5%, 96%);
-  --muted-foreground: hsl(210, 7%, 46%);
+  --foreground: hsl(0, 0%, 9%);
+  --muted: hsl(0, 0%, 98%);
+  --muted-foreground: hsl(0, 0%, 45%);
   --popover: hsl(0, 0%, 100%);
-  --popover-foreground: hsl(210, 11%, 15%);
+  --popover-foreground: hsl(0, 0%, 9%);
   --card: hsl(0, 0%, 100%);
-  --card-foreground: hsl(210, 11%, 15%);
-  --border: hsl(210, 12%, 92%);
-  --input: hsl(210, 12%, 95%);
-  --primary: hsl(214, 84%, 56%);
+  --card-foreground: hsl(0, 0%, 9%);
+  --border: hsl(0, 0%, 94%);
+  --input: hsl(0, 0%, 96%);
+  --primary: hsl(211, 100%, 50%);
   --primary-foreground: hsl(0, 0%, 100%);
-  --secondary: hsl(210, 11.5%, 96%);
-  --secondary-foreground: hsl(210, 11%, 15%);
-  --accent: hsl(210, 11.5%, 96%);
-  --accent-foreground: hsl(210, 11%, 15%);
-  --destructive: hsl(0, 84.2%, 60.2%);
+  --secondary: hsl(0, 0%, 96%);
+  --secondary-foreground: hsl(0, 0%, 9%);
+  --accent: hsl(0, 0%, 96%);
+  --accent-foreground: hsl(0, 0%, 9%);
+  --destructive: hsl(0, 72%, 51%);
   --destructive-foreground: hsl(0, 0%, 100%);
-  --ring: hsl(214, 84%, 56%);
-  --radius: 8px;
+  --ring: hsl(211, 100%, 50%);
+  --radius: 12px;
   
-  /* Flow specific colors */
-  --flow-blue: hsl(214, 84%, 56%);
-  --flow-blue-light: hsl(214, 84%, 96%);
-  --flow-blue-subtle: hsl(214, 84%, 88%);
-  --flow-success: hsl(142, 76%, 36%);
-  --flow-warning: hsl(43, 96%, 56%);
-  --flow-danger: hsl(0, 84%, 60%);
+  /* Apple-inspired colors */
+  --apple-blue: hsl(211, 100%, 50%);
+  --apple-gray: hsl(0, 0%, 45%);
+  --apple-gray-light: hsl(0, 0%, 96%);
+  --apple-black: hsl(0, 0%, 9%);
+  --apple-success: hsl(122, 39%, 49%);
+  --apple-warning: hsl(35, 91%, 62%);
+  --apple-danger: hsl(0, 72%, 51%);
 }
 
 .dark {
