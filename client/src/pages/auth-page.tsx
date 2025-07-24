@@ -1,59 +1,47 @@
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Loader2, Mail, Lock, User, ArrowRight } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Zap, ArrowLeft, Loader2, CheckCircle } from "lucide-react";
-import { Link, useLocation } from "wouter";
+import { apiRequest } from "@/lib/queryClient";
+import { useMutation } from "@tanstack/react-query";
+import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 import { Redirect } from "wouter";
-import { useToast } from "@/hooks/use-toast";
 
 const loginSchema = z.object({
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(1, "Password is required"),
+  email: z.string().email("Please enter a valid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
 const registerSchema = z.object({
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
-  firstName: z.string().optional(),
-  lastName: z.string().optional(),
+  email: z.string().email("Please enter a valid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+  firstName: z.string().min(1, "First name is required"),
+  lastName: z.string().min(1, "Last name is required"),
 });
 
-const forgotPasswordSchema = z.object({
-  email: z.string().email("Invalid email address"),
-});
-
-const resetPasswordSchema = z.object({
-  password: z.string().min(8, "Password must be at least 8 characters"),
-  confirmPassword: z.string().min(8, "Password confirmation is required"),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
-});
-
-type LoginForm = z.infer<typeof loginSchema>;
-type RegisterForm = z.infer<typeof registerSchema>;
-type ForgotPasswordForm = z.infer<typeof forgotPasswordSchema>;
-type ResetPasswordForm = z.infer<typeof resetPasswordSchema>;
+type LoginData = z.infer<typeof loginSchema>;
+type RegisterData = z.infer<typeof registerSchema>;
 
 export default function AuthPage() {
-  const [, setLocation] = useLocation();
-  const { user, loginMutation, registerMutation, forgotPasswordMutation, resetPasswordMutation } = useAuth();
+  const { user } = useAuth();
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("login");
-  const [showForgotPassword, setShowForgotPassword] = useState(false);
-  
-  // Get reset token from URL if present
-  const urlParams = new URLSearchParams(window.location.search);
-  const resetToken = urlParams.get("token");
+  const [message, setMessage] = useState("");
 
-  const loginForm = useForm<LoginForm>({
+  // Redirect authenticated users to dashboard
+  if (user) {
+    return <Redirect to="/dashboard" />;
+  }
+
+  const loginForm = useForm<LoginData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
       email: "",
@@ -61,7 +49,7 @@ export default function AuthPage() {
     },
   });
 
-  const registerForm = useForm<RegisterForm>({
+  const registerForm = useForm<RegisterData>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
       email: "",
@@ -71,356 +59,255 @@ export default function AuthPage() {
     },
   });
 
-  const forgotPasswordForm = useForm<ForgotPasswordForm>({
-    resolver: zodResolver(forgotPasswordSchema),
-    defaultValues: {
-      email: "",
+  const loginMutation = useMutation({
+    mutationFn: async (data: LoginData) => {
+      const response = await apiRequest("POST", "/api/login", data);
+      return response.json();
     },
-  });
-
-  const resetPasswordForm = useForm<ResetPasswordForm>({
-    resolver: zodResolver(resetPasswordSchema),
-    defaultValues: {
-      password: "",
-      confirmPassword: "",
-    },
-  });
-
-  // Redirect authenticated users to dashboard
-  if (user) {
-    return <Redirect to="/dashboard" />;
-  }
-
-  const onLogin = async (data: LoginForm) => {
-    try {
-      await loginMutation.mutateAsync(data);
-      setLocation("/dashboard");
-    } catch (error) {
-      // Error handling is done in the mutation
-    }
-  };
-
-  const onRegister = async (data: RegisterForm) => {
-    try {
-      await registerMutation.mutateAsync(data);
-      setLocation("/dashboard");
-    } catch (error) {
-      // Error handling is done in the mutation
-    }
-  };
-
-  const onForgotPassword = async (data: ForgotPasswordForm) => {
-    try {
-      await forgotPasswordMutation.mutateAsync(data);
-      setShowForgotPassword(false);
-    } catch (error) {
-      // Error handling is done in the mutation
-    }
-  };
-
-  const onResetPassword = async (data: ResetPasswordForm) => {
-    if (!resetToken) {
+    onSuccess: () => {
       toast({
-        title: "Invalid reset link",
-        description: "This reset link is invalid or has expired.",
+        title: "Login successful",
+        description: "Welcome back!",
+      });
+      window.location.href = "/dashboard";
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Login failed",
+        description: error.message,
         variant: "destructive",
       });
-      return;
-    }
+    },
+  });
 
-    try {
-      await resetPasswordMutation.mutateAsync({
-        token: resetToken,
-        password: data.password,
+  const registerMutation = useMutation({
+    mutationFn: async (data: RegisterData) => {
+      const response = await apiRequest("POST", "/api/register", data);
+      return response.json();
+    },
+    onSuccess: (data) => {
+      setMessage(data.message);
+      toast({
+        title: "Registration successful",
+        description: "Please check your email to verify your account.",
       });
-      setLocation("/auth");
-      window.history.replaceState({}, "", "/auth");
-    } catch (error) {
-      // Error handling is done in the mutation
-    }
+      registerForm.reset();
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Registration failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const onLogin = (data: LoginData) => {
+    loginMutation.mutate(data);
   };
 
-  // Show reset password form if token is present
-  if (resetToken) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-md w-full space-y-8">
-          <div className="text-center">
-            <Link href="/">
-              <div className="flex items-center justify-center space-x-3 mb-8">
-                <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center shadow-sm">
-                  <span className="text-primary-foreground font-semibold text-xl">F</span>
-                </div>
-                <span className="text-3xl font-medium tracking-tight text-foreground">Flow</span>
-              </div>
-            </Link>
-            <h2 className="mt-6 text-2xl font-medium text-foreground">
-              Reset your password
-            </h2>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Enter your new password below
-            </p>
-          </div>
-          <Card>
-            <CardContent className="space-y-4 pt-6">
-              <form onSubmit={resetPasswordForm.handleSubmit(onResetPassword)} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="password">New Password</Label>
-                  <Input
-                    id="password"
-                    type="password"
-                    {...resetPasswordForm.register("password")}
-                  />
-                  {resetPasswordForm.formState.errors.password && (
-                    <p className="text-sm text-red-600">
-                      {resetPasswordForm.formState.errors.password.message}
-                    </p>
-                  )}
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="confirmPassword">Confirm Password</Label>
-                  <Input
-                    id="confirmPassword"
-                    type="password"
-                    {...resetPasswordForm.register("confirmPassword")}
-                  />
-                  {resetPasswordForm.formState.errors.confirmPassword && (
-                    <p className="text-sm text-red-600">
-                      {resetPasswordForm.formState.errors.confirmPassword.message}
-                    </p>
-                  )}
-                </div>
-                <Button
-                  type="submit"
-                  className="w-full"
-                  disabled={resetPasswordMutation.isPending}
-                >
-                  {resetPasswordMutation.isPending && (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  )}
-                  Reset Password
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    );
-  }
-
-  // Show forgot password form
-  if (showForgotPassword) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-md w-full space-y-8">
-          <div className="text-center">
-            <Link href="/">
-              <div className="flex items-center justify-center space-x-3 mb-8">
-                <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center shadow-sm">
-                  <span className="text-primary-foreground font-semibold text-xl">F</span>
-                </div>
-                <span className="text-3xl font-medium tracking-tight text-foreground">Flow</span>
-              </div>
-            </Link>
-            <h2 className="mt-6 text-2xl font-medium text-foreground">
-              Forgot your password?
-            </h2>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Enter your email address and we'll send you a reset link
-            </p>
-          </div>
-          <Card>
-            <CardContent className="space-y-4 pt-6">
-              <form onSubmit={forgotPasswordForm.handleSubmit(onForgotPassword)} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email Address</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    {...forgotPasswordForm.register("email")}
-                  />
-                  {forgotPasswordForm.formState.errors.email && (
-                    <p className="text-sm text-red-600">
-                      {forgotPasswordForm.formState.errors.email.message}
-                    </p>
-                  )}
-                </div>
-                <Button
-                  type="submit"
-                  className="w-full"
-                  disabled={forgotPasswordMutation.isPending}
-                >
-                  {forgotPasswordMutation.isPending && (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  )}
-                  Send Reset Link
-                </Button>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  className="w-full"
-                  onClick={() => setShowForgotPassword(false)}
-                >
-                  <ArrowLeft className="mr-2 h-4 w-4" />
-                  Back to Sign In
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    );
-  }
+  const onRegister = (data: RegisterData) => {
+    registerMutation.mutate(data);
+  };
 
   return (
-    <div className="min-h-screen grid lg:grid-cols-2">
-      {/* Left side - Form */}
-      <div className="flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-background">
-        <div className="max-w-md w-full space-y-8">
+    <div className="min-h-screen flex">
+      {/* Left side - Auth Form */}
+      <div className="flex-1 flex items-center justify-center p-8 bg-background">
+        <div className="w-full max-w-md space-y-8">
           <div className="text-center">
-            <Link href="/">
-              <div className="flex items-center justify-center mb-8">
-                <img src="/logo.svg" alt="Flow Logo" className="h-10" />
-              </div>
-            </Link>
-            <h2 className="mt-6 text-2xl font-medium text-foreground">
-              Get paid faster
-            </h2>
-            <p className="mt-2 text-sm text-gray-600">
-              Stop chasing payments - Flow sends reminders automatically
+            <h1 className="text-3xl font-bold">Welcome to Flow</h1>
+            <p className="text-muted-foreground mt-2">
+              Automate your payment reminders and get paid faster
             </p>
           </div>
 
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          {message && (
+            <Alert>
+              <Mail className="h-4 w-4" />
+              <AlertDescription>{message}</AlertDescription>
+            </Alert>
+          )}
+
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
             <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="login">Sign In</TabsTrigger>
+              <TabsTrigger value="login">Login</TabsTrigger>
               <TabsTrigger value="register">Sign Up</TabsTrigger>
             </TabsList>
-            
+
             <TabsContent value="login">
               <Card>
                 <CardHeader>
-                  <CardTitle>Welcome back!</CardTitle>
+                  <CardTitle>Login to your account</CardTitle>
                   <CardDescription>
-                    Sign in to see how your invoices are doing
+                    Enter your email and password to access Flow
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent>
                   <form onSubmit={loginForm.handleSubmit(onLogin)} className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="email">Email</Label>
-                      <Input
-                        id="email"
-                        type="email"
-                        {...loginForm.register("email")}
-                      />
+                      <Label htmlFor="login-email">Email</Label>
+                      <div className="relative">
+                        <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          id="login-email"
+                          type="email"
+                          placeholder="Enter your email"
+                          className="pl-10"
+                          {...loginForm.register("email")}
+                        />
+                      </div>
                       {loginForm.formState.errors.email && (
-                        <p className="text-sm text-red-600">
+                        <p className="text-sm text-destructive">
                           {loginForm.formState.errors.email.message}
                         </p>
                       )}
                     </div>
+
                     <div className="space-y-2">
-                      <Label htmlFor="password">Password</Label>
-                      <Input
-                        id="password"
-                        type="password"
-                        {...loginForm.register("password")}
-                      />
+                      <Label htmlFor="login-password">Password</Label>
+                      <div className="relative">
+                        <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          id="login-password"
+                          type="password"
+                          placeholder="Enter your password"
+                          className="pl-10"
+                          {...loginForm.register("password")}
+                        />
+                      </div>
                       {loginForm.formState.errors.password && (
-                        <p className="text-sm text-red-600">
+                        <p className="text-sm text-destructive">
                           {loginForm.formState.errors.password.message}
                         </p>
                       )}
                     </div>
-                    <div className="flex items-center justify-between">
-                      <Button
-                        type="button"
-                        variant="link"
-                        className="px-0"
-                        onClick={() => setShowForgotPassword(true)}
-                      >
-                        Forgot password?
-                      </Button>
-                    </div>
+
                     <Button
                       type="submit"
                       className="w-full"
                       disabled={loginMutation.isPending}
                     >
-                      {loginMutation.isPending && (
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      {loginMutation.isPending ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Logging in...
+                        </>
+                      ) : (
+                        <>
+                          Login
+                          <ArrowRight className="ml-2 h-4 w-4" />
+                        </>
                       )}
-                      Sign In
                     </Button>
                   </form>
                 </CardContent>
               </Card>
             </TabsContent>
-            
+
             <TabsContent value="register">
               <Card>
                 <CardHeader>
-                  <CardTitle>Start getting paid faster</CardTitle>
+                  <CardTitle>Create your account</CardTitle>
                   <CardDescription>
-                    Create your free account - no credit card needed
+                    Sign up for Flow and start automating your payment reminders
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent>
                   <form onSubmit={registerForm.handleSubmit(onRegister)} className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="firstName">First Name</Label>
-                        <Input
-                          id="firstName"
-                          {...registerForm.register("firstName")}
-                        />
+                        <Label htmlFor="register-firstName">First Name</Label>
+                        <div className="relative">
+                          <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            id="register-firstName"
+                            placeholder="First name"
+                            className="pl-10"
+                            {...registerForm.register("firstName")}
+                          />
+                        </div>
+                        {registerForm.formState.errors.firstName && (
+                          <p className="text-sm text-destructive">
+                            {registerForm.formState.errors.firstName.message}
+                          </p>
+                        )}
                       </div>
+
                       <div className="space-y-2">
-                        <Label htmlFor="lastName">Last Name</Label>
+                        <Label htmlFor="register-lastName">Last Name</Label>
                         <Input
-                          id="lastName"
+                          id="register-lastName"
+                          placeholder="Last name"
                           {...registerForm.register("lastName")}
                         />
+                        {registerForm.formState.errors.lastName && (
+                          <p className="text-sm text-destructive">
+                            {registerForm.formState.errors.lastName.message}
+                          </p>
+                        )}
                       </div>
                     </div>
 
                     <div className="space-y-2">
                       <Label htmlFor="register-email">Email</Label>
-                      <Input
-                        id="register-email"
-                        type="email"
-                        {...registerForm.register("email")}
-                      />
+                      <div className="relative">
+                        <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          id="register-email"
+                          type="email"
+                          placeholder="Enter your email"
+                          className="pl-10"
+                          {...registerForm.register("email")}
+                        />
+                      </div>
                       {registerForm.formState.errors.email && (
-                        <p className="text-sm text-red-600">
+                        <p className="text-sm text-destructive">
                           {registerForm.formState.errors.email.message}
                         </p>
                       )}
                     </div>
+
                     <div className="space-y-2">
                       <Label htmlFor="register-password">Password</Label>
-                      <Input
-                        id="register-password"
-                        type="password"
-                        {...registerForm.register("password")}
-                      />
+                      <div className="relative">
+                        <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          id="register-password"
+                          type="password"
+                          placeholder="Create a password"
+                          className="pl-10"
+                          {...registerForm.register("password")}
+                        />
+                      </div>
                       {registerForm.formState.errors.password && (
-                        <p className="text-sm text-red-600">
+                        <p className="text-sm text-destructive">
                           {registerForm.formState.errors.password.message}
                         </p>
                       )}
                     </div>
+
                     <Button
                       type="submit"
                       className="w-full"
                       disabled={registerMutation.isPending}
                     >
-                      {registerMutation.isPending && (
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      {registerMutation.isPending ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Creating account...
+                        </>
+                      ) : (
+                        <>
+                          Create Account
+                          <ArrowRight className="ml-2 h-4 w-4" />
+                        </>
                       )}
-                      Create Account
                     </Button>
+
+                    <p className="text-sm text-muted-foreground text-center">
+                      By creating an account, you'll receive an email to verify your address.
+                    </p>
                   </form>
                 </CardContent>
               </Card>
@@ -429,34 +316,38 @@ export default function AuthPage() {
         </div>
       </div>
 
-      {/* Right side - Hero */}
-      <div className="hidden lg:block relative bg-muted">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-secondary/20" />
-        <div className="relative flex items-center justify-center h-full p-8">
-          <div className="max-w-md text-center space-y-6">
-            <h3 className="text-2xl font-bold">Never chase payments again</h3>
-            <p className="text-muted-foreground">
-              Flow automatically handles all your payment follow-ups, so you can focus on 
-              growing your business instead of chasing invoices.
+      {/* Right side - Hero section */}
+      <div className="hidden lg:flex flex-1 bg-gradient-to-br from-primary/10 via-primary/5 to-background items-center justify-center p-8">
+        <div className="max-w-md text-center space-y-6">
+          <div className="space-y-4">
+            <h2 className="text-3xl font-bold">Stop chasing payments</h2>
+            <p className="text-lg text-muted-foreground">
+              Flow automates your payment reminders so you can focus on what matters most - growing your business.
             </p>
-            <div className="space-y-4">
+          </div>
+          
+          <div className="space-y-4">
+            <div className="bg-background/50 backdrop-blur-sm rounded-lg p-4 border">
               <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
-                  <CheckCircle className="w-4 h-4 text-green-600" />
+                <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center">
+                  <Mail className="w-5 h-5 text-primary" />
                 </div>
-                <span className="text-sm">Sends polite reminders automatically</span>
+                <div className="text-left">
+                  <h3 className="font-semibold">Automated Reminders</h3>
+                  <p className="text-sm text-muted-foreground">Smart email sequences</p>
+                </div>
               </div>
+            </div>
+            
+            <div className="bg-background/50 backdrop-blur-sm rounded-lg p-4 border">
               <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
-                  <CheckCircle className="w-4 h-4 text-blue-600" />
+                <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center">
+                  <ArrowRight className="w-5 h-5 text-primary" />
                 </div>
-                <span className="text-sm">Tracks who has paid and who hasn't</span>
-              </div>
-              <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
-                  <CheckCircle className="w-4 h-4 text-muted-foreground" />
+                <div className="text-left">
+                  <h3 className="font-semibold">Faster Payments</h3>
+                  <p className="text-sm text-muted-foreground">Get paid 50% faster</p>
                 </div>
-                <span className="text-sm">Works with your existing invoices</span>
               </div>
             </div>
           </div>

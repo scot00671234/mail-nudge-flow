@@ -30,6 +30,10 @@ async function comparePasswords(supplied: string, stored: string) {
   return timingSafeEqual(hashedBuf, suppliedBuf);
 }
 
+function generateEmailVerificationToken(): string {
+  return randomBytes(32).toString("hex");
+}
+
 // Email transporter setup
 const createEmailTransporter = () => {
   if (!process.env.SMTP_HOST || !process.env.SMTP_USER || !process.env.SMTP_PASS) {
@@ -73,7 +77,10 @@ export function setupAuth(app: Express) {
       try {
         const user = await storage.getUserByEmail(email);
         if (!user || !(await comparePasswords(password, user.password))) {
-          return done(null, false);
+          return done(null, false, { message: 'Invalid email or password' });
+        }
+        if (!user.isEmailVerified) {
+          return done(null, false, { message: 'Please verify your email before logging in' });
         }
         return done(null, user);
       } catch (error) {
@@ -92,55 +99,106 @@ export function setupAuth(app: Express) {
     }
   });
 
+  // Email verification route
+  app.get("/api/verify-email", async (req, res) => {
+    try {
+      const { token } = req.query;
+      if (!token) {
+        return res.status(400).json({ message: "Verification token is required" });
+      }
+
+      const user = await storage.verifyUserEmail(token as string);
+      if (!user) {
+        return res.status(400).json({ message: "Invalid or expired verification token" });
+      }
+
+      res.json({ message: "Email verified successfully. You can now log in." });
+    } catch (error) {
+      console.error("Email verification error:", error);
+      res.status(500).json({ message: "Verification failed" });
+    }
+  });
+
   // Registration endpoint
   app.post("/api/register", async (req, res, next) => {
     try {
       const { email, password, firstName, lastName } = req.body;
 
-      // Check if user already exists
-      const existingEmail = await storage.getUserByEmail(email);
-      if (existingEmail) {
-        return res.status(400).json({ message: "Email already registered" });
+      // Validate input
+      if (!email || !password) {
+        return res.status(400).json({ message: "Email and password are required" });
       }
 
-      // Create new user (use email as username for backwards compatibility)
-      const hashedPassword = await hashPassword(password);
+      // Check if user already exists
+      const existingUser = await storage.getUserByEmail(email);
+      if (existingUser) {
+        return res.status(400).json({ message: "User already exists with this email" });
+      }
+
+      // Generate email verification token
+      const emailVerificationToken = generateEmailVerificationToken();
+      const emailVerificationExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+
       const user = await storage.createUser({
-        username: email, // Use email as username for backwards compatibility
         email,
-        password: hashedPassword,
+        password: await hashPassword(password),
         firstName,
         lastName,
+        emailVerificationToken,
+        emailVerificationExpiry,
+        isEmailVerified: false,
       });
 
-      // Log the user in
-      req.login(user, (err) => {
-        if (err) return next(err);
-        res.status(201).json({
-          id: user.id,
-          username: user.username,
-          email: user.email,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          subscriptionStatus: user.subscriptionStatus,
+      // Send verification email
+      if (emailTransporter) {
+        const verificationUrl = `${req.protocol}://${req.get('host')}/api/verify-email?token=${emailVerificationToken}`;
+        
+        await emailTransporter.sendMail({
+          from: process.env.SMTP_USER,
+          to: email,
+          subject: "Verify your Flow account",
+          html: `
+            <h2>Welcome to Flow!</h2>
+            <p>Please click the link below to verify your email address:</p>
+            <a href="${verificationUrl}">Verify Email</a>
+            <p>This link will expire in 24 hours.</p>
+          `,
         });
+      }
+
+      res.status(201).json({ 
+        message: "Registration successful. Please check your email to verify your account.",
+        user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName }
       });
     } catch (error: any) {
+      console.error("Registration error:", error);
       res.status(500).json({ message: "Registration failed: " + error.message });
     }
   });
 
   // Login endpoint
-  app.post("/api/login", passport.authenticate("local"), (req, res) => {
-    const user = req.user!;
-    res.status(200).json({
-      id: user.id,
-      username: user.username,
-      email: user.email,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      subscriptionStatus: user.subscriptionStatus,
-    });
+  app.post("/api/login", (req, res, next) => {
+    passport.authenticate("local", (err: any, user: any, info: any) => {
+      if (err) {
+        return next(err);
+      }
+      if (!user) {
+        return res.status(401).json({ message: info?.message || "Login failed" });
+      }
+      req.logIn(user, (err) => {
+        if (err) {
+          return next(err);
+        }
+        res.status(200).json({
+          id: user.id,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          subscriptionStatus: user.subscriptionStatus,
+          isEmailVerified: user.isEmailVerified,
+        });
+      });
+    })(req, res, next);
   });
 
   // Logout endpoint
@@ -157,11 +215,11 @@ export function setupAuth(app: Express) {
     const user = req.user!;
     res.json({
       id: user.id,
-      username: user.username,
       email: user.email,
       firstName: user.firstName,
       lastName: user.lastName,
       subscriptionStatus: user.subscriptionStatus,
+      isEmailVerified: user.isEmailVerified,
     });
   });
 
