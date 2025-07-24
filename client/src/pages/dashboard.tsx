@@ -8,26 +8,23 @@ import QuickActions from "@/components/dashboard/quick-actions";
 import RecentActivity from "@/components/dashboard/recent-activity";
 import UpcomingNudges from "@/components/dashboard/upcoming-nudges";
 import UploadModal from "@/components/invoices/upload-modal";
-import WelcomeGuide from "@/components/onboarding/welcome-guide";
+// WelcomeGuide removed - users go straight to dashboard
 import FirstInvoicePrompt from "@/components/onboarding/first-invoice-prompt";
 import { EmailConnectionBanner } from "@/components/dashboard/email-connection-banner";
 import type { DashboardMetrics } from "@/lib/types";
 
 export default function Dashboard() {
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
-  const [showWelcomeGuide, setShowWelcomeGuide] = useState(false);
+  // Welcome guide state removed
   const [showFirstInvoicePrompt, setShowFirstInvoicePrompt] = useState(false);
 
   const { data: metrics, isLoading: metricsLoading } = useQuery<DashboardMetrics>({
     queryKey: ["/api/dashboard/metrics"],
   });
 
-  // Check if this is a new user (no invoices)
+  // Show first invoice prompt for new users (no welcome popup)
   useEffect(() => {
-    const hasSeenWelcome = localStorage.getItem('flow-welcome-seen');
-    if (!hasSeenWelcome && metrics && metrics.outstandingInvoices === 0) {
-      setShowWelcomeGuide(true);
-    } else if (metrics && metrics.outstandingInvoices === 0 && !hasSeenWelcome) {
+    if (metrics && metrics.outstandingInvoices === 0) {
       setShowFirstInvoicePrompt(true);
     }
   }, [metrics]);
@@ -40,17 +37,7 @@ export default function Dashboard() {
     setIsUploadModalOpen(true);
   };
 
-  const handleWelcomeClose = () => {
-    localStorage.setItem('flow-welcome-seen', 'true');
-    setShowWelcomeGuide(false);
-    setShowFirstInvoicePrompt(true);
-  };
-
-  const handleWelcomeStartTour = () => {
-    localStorage.setItem('flow-welcome-seen', 'true');
-    setShowWelcomeGuide(false);
-    setShowFirstInvoicePrompt(true);
-  };
+  // Removed welcome handlers since we're not showing the welcome guide
 
   const handleFirstInvoiceDismiss = () => {
     setShowFirstInvoicePrompt(false);
@@ -146,13 +133,7 @@ export default function Dashboard() {
         onClose={() => setIsUploadModalOpen(false)} 
       />
 
-      {/* Welcome Guide for new users */}
-      {showWelcomeGuide && (
-        <WelcomeGuide
-          onClose={handleWelcomeClose}
-          onStartTour={handleWelcomeStartTour}
-        />
-      )}
+      {/* Welcome guide removed - users go straight to first invoice prompt */}
     </>
   );
 }
