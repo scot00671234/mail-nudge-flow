@@ -11,6 +11,7 @@ import UploadModal from "@/components/invoices/upload-modal";
 // WelcomeGuide removed - users go straight to dashboard
 import FirstInvoicePrompt from "@/components/onboarding/first-invoice-prompt";
 import { EmailConnectionBanner } from "@/components/dashboard/email-connection-banner";
+import { PageHeader } from "@/components/layout/page-header";
 import type { DashboardMetrics } from "@/lib/types";
 
 export default function Dashboard() {
@@ -45,29 +46,23 @@ export default function Dashboard() {
 
   return (
     <>
-      {/* Header */}
-      <header className="flex-shrink-0 bg-background border-b border-border/50">
-        <div className="px-8 py-8">
-          <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-2xl font-semibold text-foreground">Overview</h1>
-              <p className="text-muted-foreground text-sm mt-1">See how your invoices are doing</p>
-            </div>
-            <div className="flex items-center space-x-3">
-              <Button 
-                onClick={handleUploadInvoice}
-                className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl px-5 py-2.5 text-sm font-medium"
-              >
-                <Plus className="mr-2 w-4 h-4" />
-                New Invoice
-              </Button>
-              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground rounded-xl">
-                <Bell className="w-4 h-4" />
-              </Button>
-            </div>
-          </div>
+      <PageHeader 
+        title="Overview" 
+        description="See how your invoices are doing"
+      >
+        <div className="flex items-center space-x-3">
+          <Button 
+            onClick={handleUploadInvoice}
+            className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl px-5 py-2.5 text-sm font-medium"
+          >
+            <Plus className="mr-2 w-4 h-4" />
+            New Invoice
+          </Button>
+          <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground rounded-xl">
+            <Bell className="w-4 h-4" />
+          </Button>
         </div>
-      </header>
+      </PageHeader>
 
       {/* Main Content */}
       <main className="flex-1 overflow-y-auto px-8 py-6 bg-background">
