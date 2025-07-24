@@ -4,6 +4,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/hooks/use-auth";
+import { OnboardingProvider } from "@/components/onboarding/onboarding-provider";
 import LandingPage from "@/pages/landing-page-new";
 import AuthPage from "@/pages/auth-page";
 import NotFound from "@/pages/not-found";
@@ -64,7 +65,9 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <AppContent />
+        <OnboardingProvider>
+          <AppContent />
+        </OnboardingProvider>
       </AuthProvider>
     </QueryClientProvider>
   );
