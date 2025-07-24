@@ -159,18 +159,16 @@ export default function EmailSetupPage() {
   if (isLoading) {
     return (
       <>
-        <header className="bg-white shadow-sm border-b border-gray-200">
-          <div className="px-4 sm:px-6 lg:px-8">
-            <div className="py-4">
-              <h1 className="text-2xl font-bold text-gray-900">Email Setup</h1>
-              <p className="text-sm text-gray-500">Connect your email to send payment reminders</p>
-            </div>
+        <header className="bg-background border-b border-border">
+          <div className="px-8 py-6">
+            <h1 className="text-2xl font-semibold text-foreground">Email Setup</h1>
+            <p className="text-sm text-muted-foreground mt-1">Connect your email to automatically send payment reminders</p>
           </div>
         </header>
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
-          <div className="animate-pulse space-y-6">
-            <div className="h-48 bg-gray-200 rounded"></div>
-            <div className="h-32 bg-gray-200 rounded"></div>
+        <main className="flex-1 overflow-y-auto px-8 py-6 bg-background">
+          <div className="max-w-2xl mx-auto space-y-6 animate-pulse">
+            <div className="h-48 bg-muted rounded-lg"></div>
+            <div className="h-32 bg-muted rounded-lg"></div>
           </div>
         </main>
       </>
@@ -181,91 +179,83 @@ export default function EmailSetupPage() {
 
   return (
     <>
-      <header className="bg-white shadow-sm border-b border-gray-200">
-        <div className="px-4 sm:px-6 lg:px-8">
-          <div className="py-4">
-            <h1 className="text-2xl font-bold text-gray-900">Email Setup</h1>
-            <p className="text-sm text-gray-500">Connect your email to automatically send payment reminders</p>
-          </div>
+      <header className="bg-background border-b border-border">
+        <div className="px-8 py-6">
+          <h1 className="text-2xl font-semibold text-foreground">Email Setup</h1>
+          <p className="text-sm text-muted-foreground mt-1">Connect your email to automatically send payment reminders</p>
         </div>
       </header>
 
-      <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
-        <div className="max-w-4xl mx-auto space-y-8">
+      <main className="flex-1 overflow-y-auto px-8 py-6 bg-background">
+        <div className="max-w-2xl mx-auto space-y-6">
           
-          {/* Connection Status */}
-          {activeConnection ? (
-            <Alert className="border-green-200 bg-green-50">
-              <CheckCircle className="h-4 w-4 text-green-600" />
-              <AlertDescription className="text-green-800">
-                <strong>Email connected!</strong> Payment reminders will be sent from {activeConnection.email}
-              </AlertDescription>
-            </Alert>
-          ) : (
-            <Alert>
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>
-                <strong>No email connected.</strong> Connect your email to start sending automatic payment reminders.
-              </AlertDescription>
-            </Alert>
+          {/* Clean connection status */}
+          {activeConnection && (
+            <div className="bg-muted border border-border rounded-lg px-4 py-3">
+              <div className="flex items-center gap-3">
+                <div className="w-6 h-6 bg-background rounded-full flex items-center justify-center border">
+                  <CheckCircle className="h-3 w-3 text-muted-foreground" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-foreground">Email connected</p>
+                  <p className="text-xs text-muted-foreground">Reminders will be sent from {activeConnection.email}</p>
+                </div>
+              </div>
+            </div>
           )}
 
           {/* Connect Email Providers */}
           {!activeConnection && (
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Mail className="w-5 h-5 text-blue-600" />
-                  Connect Your Email
+                <CardTitle className="text-lg font-semibold text-foreground">
+                  Connect your email
                 </CardTitle>
-                <p className="text-sm text-gray-600">
-                  Choose your email provider to get started. We only need permission to send emails - we never read your inbox.
+                <p className="text-sm text-muted-foreground">
+                  Choose your email provider to send payment reminders. We only need permission to send emails.
                 </p>
               </CardHeader>
               <CardContent className="space-y-6">
                 
-                {/* What Happens Next Section */}
-                <div className="bg-blue-50 p-4 rounded-lg">
-                  <h3 className="font-medium text-blue-900 mb-2">Here's what happens next:</h3>
-                  <ol className="text-sm text-blue-800 space-y-1">
-                    <li>1. 🔐 Sign in to your email account</li>
-                    <li>2. ✅ Give Flow permission to send emails only</li>
-                    <li>3. 🧪 We'll send you a test email to confirm it works</li>
-                    <li>4. 🎉 Start sending automatic payment reminders!</li>
-                  </ol>
+                {/* Clean steps - no ugly box */}
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                    <div className="w-6 h-6 bg-muted rounded-full flex items-center justify-center text-xs font-medium">1</div>
+                    <span>Sign in to your email account</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                    <div className="w-6 h-6 bg-muted rounded-full flex items-center justify-center text-xs font-medium">2</div>
+                    <span>Give permission to send emails only</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                    <div className="w-6 h-6 bg-muted rounded-full flex items-center justify-center text-xs font-medium">3</div>
+                    <span>We'll send you a test email to confirm it works</span>
+                  </div>
                 </div>
 
-                {/* Privacy Assurance */}
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <h3 className="font-medium text-gray-900 mb-2">Your email stays yours:</h3>
-                  <ul className="text-sm text-gray-700 space-y-1">
-                    <li>• We never read your emails or access your inbox</li>
-                    <li>• We only send payment reminders that you approve</li>
-                    <li>• You can disconnect anytime with one click</li>
-                    <li>• All connections use secure OAuth2 authentication</li>
-                  </ul>
-                </div>
-
-                {/* Provider Buttons */}
-                <div className="grid md:grid-cols-2 gap-4">
+                {/* Clean provider buttons */}
+                <div className="space-y-3">
                   {providers && Object.values(providers).map((provider) => (
-                    <Card key={provider.name} className="cursor-pointer hover:shadow-md transition-shadow">
-                      <CardContent className="p-6 text-center">
-                        <div className="text-4xl mb-3">{provider.icon}</div>
-                        <h3 className="font-semibold text-lg mb-2">{provider.displayName}</h3>
-                        <p className="text-sm text-gray-600 mb-4">
-                          Connect your {provider.displayName} account to send reminders
-                        </p>
+                    <div key={provider.name} className="border border-border rounded-lg p-4 hover:bg-muted/50 transition-colors">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="text-xl">{provider.icon}</div>
+                          <div>
+                            <h3 className="font-medium text-foreground">{provider.displayName}</h3>
+                            <p className="text-xs text-muted-foreground">
+                              Connect your {provider.displayName} account
+                            </p>
+                          </div>
+                        </div>
                         <Button 
                           onClick={() => handleConnect(provider.name)}
                           disabled={oauthMutation.isPending}
-                          className="w-full"
+                          className="bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 text-sm"
                         >
-                          {oauthMutation.isPending ? "Connecting..." : `Connect ${provider.displayName}`}
-                          <ExternalLink className="w-4 h-4 ml-2" />
+                          {oauthMutation.isPending ? "Connecting..." : "Connect"}
                         </Button>
-                      </CardContent>
-                    </Card>
+                      </div>
+                    </div>
                   ))}
                 </div>
               </CardContent>
