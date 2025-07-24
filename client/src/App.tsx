@@ -52,14 +52,20 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
   );
 }
 
+function AppContent() {
+  return (
+    <TooltipProvider>
+      <Toaster />
+      <Router />
+    </TooltipProvider>
+  );
+}
+
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Router />
-        </TooltipProvider>
+        <AppContent />
       </AuthProvider>
     </QueryClientProvider>
   );
