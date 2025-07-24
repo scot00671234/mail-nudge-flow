@@ -8,6 +8,7 @@ import {
   nudgeSettings,
   emailConnections,
   type User,
+  type UpsertUser,
   type Customer, 
   type Invoice, 
   type EmailTemplate, 
@@ -32,16 +33,11 @@ import createMemoryStore from "memorystore";
 export interface IStorage {
   sessionStore: session.Store;
 
-  // Users
-  getUser(id: number): Promise<User | undefined>;
-  getUserByUsername(username: string): Promise<User | undefined>;
+  // Users - (IMPORTANT) these user operations are mandatory for Replit Auth.
+  getUser(id: string): Promise<User | undefined>;
+  upsertUser(user: UpsertUser): Promise<User>;
   getUserByEmail(email: string): Promise<User | undefined>;
-  getUserByResetToken(token: string): Promise<User | undefined>;
-  createUser(user: InsertUser): Promise<User>;
-  updateUser(id: number, user: Partial<InsertUser>): Promise<User | undefined>;
-  updateUserStripeInfo(id: number, stripeCustomerId: string, stripeSubscriptionId: string): Promise<User | undefined>;
-  setResetToken(id: number, token: string, expiry: Date): Promise<User | undefined>;
-  clearResetToken(id: number): Promise<User | undefined>;
+  updateUserStripeInfo(id: string, stripeCustomerId: string, stripeSubscriptionId: string): Promise<User | undefined>;
 
   // Customers
   getCustomers(): Promise<Customer[]>;
@@ -180,75 +176,44 @@ export class MemStorage implements IStorage {
     });
   }
 
-  // Users
-  async getUser(id: number): Promise<User | undefined> {
-    return this.users.get(id);
-  }
-
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(user => user.username === username);
-  }
-
-  async getUserByEmail(email: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(user => user.email === email);
-  }
-
-  async getUserByResetToken(token: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(user => user.resetToken === token && user.resetTokenExpiry && new Date() < user.resetTokenExpiry);
-  }
-
-  async createUser(insertUser: InsertUser): Promise<User> {
-    const id = this.currentId.users++;
-    const user: User = {
-      ...insertUser,
-      id,
-      createdAt: new Date(),
-      firstName: insertUser.firstName ?? null,
-      lastName: insertUser.lastName ?? null,
-      stripeCustomerId: insertUser.stripeCustomerId ?? null,
-      stripeSubscriptionId: insertUser.stripeSubscriptionId ?? null,
-      subscriptionStatus: insertUser.subscriptionStatus ?? "inactive",
-      resetToken: null,
-      resetTokenExpiry: null,
-    };
-    this.users.set(id, user);
+  // Users - (IMPORTANT) these user operations are mandatory for Replit Auth.
+  async getUser(id: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
     return user;
   }
 
-  async updateUser(id: number, updateData: Partial<InsertUser>): Promise<User | undefined> {
-    const user = this.users.get(id);
-    if (!user) return undefined;
-    
-    const updated = { ...user, ...updateData };
-    this.users.set(id, updated);
-    return updated;
+  async upsertUser(userData: UpsertUser): Promise<User> {
+    const [user] = await db
+      .insert(users)
+      .values(userData)
+      .onConflictDoUpdate({
+        target: users.id,
+        set: {
+          ...userData,
+          updatedAt: new Date(),
+        },
+      })
+      .returning();
+    return user;
   }
 
-  async updateUserStripeInfo(id: number, stripeCustomerId: string, stripeSubscriptionId: string): Promise<User | undefined> {
-    const user = this.users.get(id);
-    if (!user) return undefined;
-    
-    const updated = { ...user, stripeCustomerId, stripeSubscriptionId, subscriptionStatus: "active" };
-    this.users.set(id, updated);
-    return updated;
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user;
   }
 
-  async setResetToken(id: number, token: string, expiry: Date): Promise<User | undefined> {
-    const user = this.users.get(id);
-    if (!user) return undefined;
-    
-    const updated = { ...user, resetToken: token, resetTokenExpiry: expiry };
-    this.users.set(id, updated);
-    return updated;
-  }
-
-  async clearResetToken(id: number): Promise<User | undefined> {
-    const user = this.users.get(id);
-    if (!user) return undefined;
-    
-    const updated = { ...user, resetToken: null, resetTokenExpiry: null };
-    this.users.set(id, updated);
-    return updated;
+  async updateUserStripeInfo(id: string, stripeCustomerId: string, stripeSubscriptionId: string): Promise<User | undefined> {
+    const [user] = await db
+      .update(users)
+      .set({ 
+        stripeCustomerId, 
+        stripeSubscriptionId, 
+        subscriptionStatus: "active",
+        updatedAt: new Date()
+      })
+      .where(eq(users.id, id))
+      .returning();
+    return user;
   }
 
   // Customers

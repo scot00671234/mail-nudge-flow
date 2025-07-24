@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { setupAuth } from "./auth";
+import { setupAuth, isAuthenticated } from "./replitAuth";
 import { emailService, EMAIL_PROVIDERS } from "./email-service";
 import Stripe from "stripe";
 import { 
@@ -21,19 +21,24 @@ if (process.env.STRIPE_SECRET_KEY) {
   });
 }
 
-function requireAuth(req: any, res: any, next: any) {
-  if (!req.isAuthenticated()) {
-    return res.sendStatus(401);
-  }
-  next();
-}
-
 export async function registerRoutes(app: Express): Promise<Server> {
   // Set up authentication first
-  setupAuth(app);
+  await setupAuth(app);
   
+  // Auth routes
+  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      res.json(user);
+    } catch (error) {
+      console.error("Error fetching user:", error);
+      res.status(500).json({ message: "Failed to fetch user" });
+    }
+  });
+
   // Dashboard metrics
-  app.get("/api/dashboard/metrics", requireAuth, async (req, res) => {
+  app.get("/api/dashboard/metrics", isAuthenticated, async (req, res) => {
     try {
       const metrics = await storage.getDashboardMetrics();
       res.json(metrics);
@@ -43,7 +48,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Customers
-  app.get("/api/customers", requireAuth, async (req, res) => {
+  app.get("/api/customers", isAuthenticated, async (req, res) => {
     try {
       const customers = await storage.getCustomers();
       res.json(customers);
@@ -52,7 +57,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/customers/:id", requireAuth, async (req, res) => {
+  app.get("/api/customers/:id", isAuthenticated, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const customer = await storage.getCustomer(id);
@@ -65,7 +70,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/customers", requireAuth, async (req, res) => {
+  app.post("/api/customers", isAuthenticated, async (req, res) => {
     try {
       const validatedData = insertCustomerSchema.parse(req.body);
       const customer = await storage.createCustomer(validatedData);
@@ -78,7 +83,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/customers/:id", requireAuth, async (req, res) => {
+  app.put("/api/customers/:id", isAuthenticated, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const validatedData = insertCustomerSchema.partial().parse(req.body);
@@ -338,12 +343,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Email Integration Routes
   
   // Get available email providers
-  app.get("/api/email/providers", requireAuth, (req, res) => {
+  app.get("/api/email/providers", isAuthenticated, (req, res) => {
     res.json(EMAIL_PROVIDERS);
   });
 
   // Get user's email connections
-  app.get("/api/email/connections", requireAuth, async (req, res) => {
+  app.get("/api/email/connections", isAuthenticated, async (req, res) => {
     try {
       const userId = req.user.id;
       const connections = await storage.getEmailConnections(userId);
@@ -354,7 +359,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Initiate OAuth flow
-  app.get("/api/oauth/:provider/auth", requireAuth, async (req, res) => {
+  app.get("/api/oauth/:provider/auth", isAuthenticated, async (req, res) => {
     try {
       const { provider } = req.params;
       let authUrl: string;
@@ -418,7 +423,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Send test email
-  app.post("/api/email/test", requireAuth, async (req, res) => {
+  app.post("/api/email/test", isAuthenticated, async (req, res) => {
     try {
       const { connectionId, testEmail } = req.body;
       if (!connectionId || !testEmail) {
@@ -434,7 +439,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Disconnect email provider
-  app.delete("/api/email/connections/:id", requireAuth, async (req, res) => {
+  app.delete("/api/email/connections/:id", isAuthenticated, async (req, res) => {
     try {
       const connectionId = parseInt(req.params.id);
       const success = await storage.deleteEmailConnection(connectionId);
@@ -450,7 +455,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Email Footer Management Routes
   
   // Get footer configuration for current user
-  app.get("/api/email/footer-config", requireAuth, async (req, res) => {
+  app.get("/api/email/footer-config", isAuthenticated, async (req, res) => {
     try {
       const userId = req.user.id;
       const { EmailFooterService } = await import("./email-footer-service");
@@ -462,7 +467,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Update footer preference
-  app.put("/api/email/footer-preference", requireAuth, async (req, res) => {
+  app.put("/api/email/footer-preference", isAuthenticated, async (req, res) => {
     try {
       const userId = req.user.id;
       const { hideFooter } = req.body;

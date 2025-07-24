@@ -109,12 +109,12 @@ export default function LandingPage() {
               <a href="#pricing">Pricing</a>
             </nav>
             <div className="flex items-center space-x-2">
-              <Link href="/auth">
+              <a href="/api/login">
                 <Button variant="ghost">Sign In</Button>
-              </Link>
-              <Link href="/auth">
+              </a>
+              <a href="/api/login">
                 <Button>Get Started</Button>
-              </Link>
+              </a>
             </div>
           </div>
         </div>
