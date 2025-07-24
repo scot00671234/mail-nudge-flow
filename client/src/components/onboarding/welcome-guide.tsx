@@ -61,12 +61,12 @@ export default function WelcomeGuide({ onClose, onStartTour }: WelcomeGuideProps
     {
       title: "Your Customers",
       description: "Flow keeps track of your customers automatically. When you add invoices, we'll remember who they are for next time.",
-      icon: <Users className="w-8 h-8 text-purple-500" />,
+      icon: <Users className="w-8 h-8 text-muted-foreground" />,
       content: (
         <div className="space-y-4">
-          <div className="bg-purple-50 p-4 rounded-lg">
-            <h4 className="font-medium text-purple-900 mb-2">We remember everything:</h4>
-            <div className="space-y-2 text-sm text-purple-800">
+          <div className="bg-muted p-4 rounded-lg">
+            <h4 className="font-medium text-foreground mb-2">We remember everything:</h4>
+            <div className="space-y-2 text-sm text-muted-foreground">
               <p>👥 Customer names and email addresses</p>
               <p>📧 Their payment history</p>
               <p>💰 How much they owe you</p>

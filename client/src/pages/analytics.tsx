@@ -172,7 +172,7 @@ export default function Analytics() {
             value={totalCustomers}
             change="+3"
             trend="up"
-            icon={<Users className="text-purple-600 w-6 h-6" />}
+            icon={<Users className="text-muted-foreground w-6 h-6" />}
             description="Total customers"
           />
           
@@ -214,8 +214,8 @@ export default function Analytics() {
                   </div>
                   
                   <div className="text-center p-4 bg-gray-50 rounded-lg">
-                    <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                      <BarChart3 className="text-purple-600 w-6 h-6" />
+                    <div className="w-12 h-12 bg-muted rounded-full flex items-center justify-center mx-auto mb-2">
+                      <BarChart3 className="text-muted-foreground w-6 h-6" />
                     </div>
                     <p className="text-2xl font-bold text-gray-900">{metrics?.responseRate || 0}%</p>
                     <p className="text-sm text-gray-600">Response Rate</p>

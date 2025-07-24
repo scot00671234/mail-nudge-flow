@@ -43,8 +43,8 @@ export default function QuickActions({ onUploadInvoice, onCreateInvoice }: Quick
           className="w-full flex items-center justify-between p-3 text-left border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
         >
           <div className="flex items-center">
-            <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
-              <PlaneTakeoff className="text-purple-600 w-4 h-4" />
+            <div className="w-8 h-8 bg-muted rounded-lg flex items-center justify-center mr-3">
+              <PlaneTakeoff className="text-muted-foreground w-4 h-4" />
             </div>
             <span className="font-medium text-gray-900">Send Payment Reminders</span>
           </div>

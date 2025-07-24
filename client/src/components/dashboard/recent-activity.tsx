@@ -11,7 +11,7 @@ function getActivityIcon(type: string) {
     case "nudge_sent":
       return <PlaneTakeoff className="text-flow-blue w-3 h-3" />;
     case "invoice_created":
-      return <Plus className="text-purple-600 w-3 h-3" />;
+      return <Plus className="text-muted-foreground w-3 h-3" />;
     case "invoice_overdue":
       return <AlertTriangle className="text-flow-warning w-3 h-3" />;
     default:
@@ -26,7 +26,7 @@ function getActivityIconBg(type: string) {
     case "nudge_sent":
       return "bg-flow-blue bg-opacity-10";
     case "invoice_created":
-      return "bg-purple-100";
+      return "bg-muted";
     case "invoice_overdue":
       return "bg-flow-warning bg-opacity-10";
     default:

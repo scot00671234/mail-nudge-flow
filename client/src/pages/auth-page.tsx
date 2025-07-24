@@ -453,8 +453,8 @@ export default function AuthPage() {
                 <span className="text-sm">Tracks who has paid and who hasn't</span>
               </div>
               <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center">
-                  <CheckCircle className="w-4 h-4 text-purple-600" />
+                <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
+                  <CheckCircle className="w-4 h-4 text-muted-foreground" />
                 </div>
                 <span className="text-sm">Works with your existing invoices</span>
               </div>
