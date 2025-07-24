@@ -15,7 +15,8 @@ import NudgeSettings from "@/pages/nudge-settings";
 import Analytics from "@/pages/analytics";
 import AccountSettings from "@/pages/account-settings";
 import EmailSetup from "@/pages/email-setup";
-import Sidebar from "@/components/layout/sidebar";
+import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
+import AppSidebar from "@/components/layout/app-sidebar";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -28,31 +29,25 @@ function Router() {
           <Route path="/auth" component={AuthPage} />
         </>
       ) : (
-        <>
-          <Route path="/" component={Dashboard} />
-          <Route path="/dashboard" component={Dashboard} />
-          <Route path="/invoices" component={Invoices} />
-          <Route path="/customers" component={Customers} />
-          <Route path="/email-templates" component={EmailTemplates} />
-          <Route path="/nudge-settings" component={NudgeSettings} />
-          <Route path="/analytics" component={Analytics} />
-          <Route path="/account" component={AccountSettings} />
-          <Route path="/email-setup" component={EmailSetup} />
-        </>
+        <SidebarProvider>
+          <AppSidebar />
+          <SidebarInset>
+            <Switch>
+              <Route path="/" component={Dashboard} />
+              <Route path="/dashboard" component={Dashboard} />
+              <Route path="/invoices" component={Invoices} />
+              <Route path="/customers" component={Customers} />
+              <Route path="/email-templates" component={EmailTemplates} />
+              <Route path="/nudge-settings" component={NudgeSettings} />
+              <Route path="/analytics" component={Analytics} />
+              <Route path="/account" component={AccountSettings} />
+              <Route path="/email-setup" component={EmailSetup} />
+            </Switch>
+          </SidebarInset>
+        </SidebarProvider>
       )}
       <Route component={NotFound} />
     </Switch>
-  );
-}
-
-function DashboardLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="flex min-h-screen bg-background">
-      <Sidebar />
-      <div className="flex-1">
-        {children}
-      </div>
-    </div>
   );
 }
 

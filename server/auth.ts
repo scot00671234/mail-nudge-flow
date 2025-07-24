@@ -72,6 +72,14 @@ export function setupAuth(app: Express) {
   app.use(passport.initialize());
   app.use(passport.session());
 
+  // Add helper method to request object for authentication checks
+  app.use((req: any, res, next) => {
+    req.requireAuth = () => {
+      return req.isAuthenticated();
+    };
+    next();
+  });
+
   passport.use(
     new LocalStrategy({ usernameField: 'email' }, async (email, password, done) => {
       try {
