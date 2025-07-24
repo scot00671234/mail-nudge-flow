@@ -109,6 +109,7 @@ export class MemStorage implements IStorage {
   private emailTemplates: Map<number, EmailTemplate>;
   private nudgeSchedules: Map<number, NudgeSchedule>;
   private activities: Map<number, Activity>;
+  private emailConnections: Map<number, EmailConnection>;
   private nudgeSettings: NudgeSettings;
   private currentId: { [key: string]: number };
 
@@ -120,6 +121,7 @@ export class MemStorage implements IStorage {
     this.emailTemplates = new Map();
     this.nudgeSchedules = new Map();
     this.activities = new Map();
+    this.emailConnections = new Map();
     this.currentId = {
       users: 1,
       customers: 1,
@@ -127,6 +129,7 @@ export class MemStorage implements IStorage {
       emailTemplates: 1,
       nudgeSchedules: 1,
       activities: 1,
+      emailConnections: 1,
     };
 
     // Initialize with default nudge settings
@@ -180,67 +183,69 @@ export class MemStorage implements IStorage {
 
   // Users - Email/password authentication
   async getUser(id: number): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.id, id));
-    return user;
+    return this.users.get(id);
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const [user] = await db
-      .insert(users)
-      .values(insertUser)
-      .returning();
+    const id = this.currentId.users++;
+    const user: User = {
+      ...insertUser,
+      id,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      stripeCustomerId: insertUser.stripeCustomerId ?? null,
+      stripeSubscriptionId: insertUser.stripeSubscriptionId ?? null,
+      subscriptionStatus: insertUser.subscriptionStatus ?? "inactive",
+    };
+    this.users.set(id, user);
     return user;
   }
 
   async updateUser(id: number, updates: Partial<User>): Promise<User | undefined> {
-    const [user] = await db
-      .update(users)
-      .set(updates)
-      .where(eq(users.id, id))
-      .returning();
-    return user;
+    const user = this.users.get(id);
+    if (!user) return undefined;
+    
+    const updated = { ...user, ...updates, updatedAt: new Date() };
+    this.users.set(id, updated);
+    return updated;
   }
 
   async verifyUserEmail(token: string): Promise<User | undefined> {
-    const [user] = await db
-      .select()
-      .from(users)
-      .where(eq(users.emailVerificationToken, token));
+    const user = Array.from(this.users.values()).find(u => u.emailVerificationToken === token);
     
     if (!user || !user.emailVerificationExpiry || user.emailVerificationExpiry < new Date()) {
       return undefined;
     }
 
-    const [updatedUser] = await db
-      .update(users)
-      .set({
-        isEmailVerified: true,
-        emailVerificationToken: null,
-        emailVerificationExpiry: null,
-      })
-      .where(eq(users.id, user.id))
-      .returning();
-
-    return updatedUser;
+    const updated = {
+      ...user,
+      isEmailVerified: true,
+      emailVerificationToken: null,
+      emailVerificationExpiry: null,
+      updatedAt: new Date()
+    };
+    
+    this.users.set(user.id, updated);
+    return updated;
   }
 
   async getUserByEmail(email: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.email, email));
-    return user;
+    return Array.from(this.users.values()).find(user => user.email === email);
   }
 
-  async updateUserStripeInfo(id: string, stripeCustomerId: string, stripeSubscriptionId: string): Promise<User | undefined> {
-    const [user] = await db
-      .update(users)
-      .set({ 
-        stripeCustomerId, 
-        stripeSubscriptionId, 
-        subscriptionStatus: "active",
-        updatedAt: new Date()
-      })
-      .where(eq(users.id, id))
-      .returning();
-    return user;
+  async updateUserStripeInfo(id: number, stripeCustomerId: string, stripeSubscriptionId: string): Promise<User | undefined> {
+    const user = this.users.get(id);
+    if (!user) return undefined;
+    
+    const updated = { 
+      ...user,
+      stripeCustomerId, 
+      stripeSubscriptionId, 
+      subscriptionStatus: "active",
+      updatedAt: new Date()
+    };
+    this.users.set(id, updated);
+    return updated;
   }
 
   // Customers
@@ -518,6 +523,51 @@ export class MemStorage implements IStorage {
       nudgesSent,
       avgCollectionTime: Math.round(avgCollectionTime),
     };
+  }
+
+  // Email Connections
+  async getEmailConnections(userId: number): Promise<EmailConnection[]> {
+    return Array.from(this.emailConnections.values()).filter(conn => conn.userId === userId);
+  }
+
+  async getEmailConnection(id: number): Promise<EmailConnection | undefined> {
+    return this.emailConnections.get(id);
+  }
+
+  async getActiveEmailConnection(userId: number): Promise<EmailConnection | undefined> {
+    return Array.from(this.emailConnections.values()).find(conn => 
+      conn.userId === userId && conn.isActive
+    );
+  }
+
+  async createEmailConnection(insertConnection: InsertEmailConnection): Promise<EmailConnection> {
+    const id = this.currentId.emailConnections++;
+    const connection: EmailConnection = {
+      ...insertConnection,
+      id,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      lastTestSent: insertConnection.lastTestSent ?? null,
+    };
+    this.emailConnections.set(id, connection);
+    return connection;
+  }
+
+  async updateEmailConnection(id: number, updateConnection: Partial<InsertEmailConnection>): Promise<EmailConnection | undefined> {
+    const connection = this.emailConnections.get(id);
+    if (!connection) return undefined;
+    
+    const updated = { 
+      ...connection, 
+      ...updateConnection, 
+      updatedAt: new Date() 
+    };
+    this.emailConnections.set(id, updated);
+    return updated;
+  }
+
+  async deleteEmailConnection(id: number): Promise<boolean> {
+    return this.emailConnections.delete(id);
   }
 }
 
