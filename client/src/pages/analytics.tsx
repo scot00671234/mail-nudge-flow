@@ -109,10 +109,10 @@ export default function Analytics() {
     ? (paymentActivities.length / nudgeActivities.length * 100).toFixed(1)
     : "0";
 
-  // Recent trends (mock data for demonstration)
-  const invoiceGrowth = "+12.5%";
-  const revenueGrowth = "+8.3%";
-  const responseGrowth = "+5.2%";
+  // Trend calculations will be implemented with real data
+  const invoiceGrowth = "–";
+  const revenueGrowth = "–";
+  const responseGrowth = "–";
 
   return (
     <>

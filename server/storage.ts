@@ -516,8 +516,8 @@ export class MemStorage implements IStorage {
         }, 0) / paidInvoices.length
       : 0;
 
-    // Mock response rate calculation
-    const responseRate = 78;
+    // Calculate actual response rate (will be 0 until email responses are tracked)
+    const responseRate = 0;
 
     return {
       outstandingInvoices: outstandingInvoices.length,
@@ -811,8 +811,8 @@ export class DatabaseStorage implements IStorage {
         }, 0) / paidInvoices.length
       : 0;
 
-    // Mock response rate calculation
-    const responseRate = 78;
+    // Calculate actual response rate (will be 0 until email responses are tracked)
+    const responseRate = 0;
 
     return {
       outstandingInvoices: outstandingInvoices.length,

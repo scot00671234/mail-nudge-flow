@@ -16,11 +16,11 @@ export default function MetricsCards({ metrics }: MetricsCardsProps) {
               <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Outstanding Invoices</p>
               <p className="text-3xl font-semibold text-foreground mt-2">{metrics.outstandingInvoices}</p>
             </div>
-            <div className="w-10 h-10 bg-destructive/10 rounded-xl flex items-center justify-center">
-              <AlertTriangle className="text-destructive w-5 h-5" />
+            <div className="w-8 h-8 bg-muted rounded-lg flex items-center justify-center">
+              <AlertTriangle className="text-muted-foreground w-4 h-4" />
             </div>
           </div>
-          <div className="mt-4">
+          <div className="mt-3">
             <span className="text-xs text-muted-foreground">
               ${metrics.outstandingValue.toLocaleString()} total value
             </span>
@@ -35,12 +35,12 @@ export default function MetricsCards({ metrics }: MetricsCardsProps) {
               <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Response Rate</p>
               <p className="text-3xl font-semibold text-foreground mt-2">{metrics.responseRate}%</p>
             </div>
-            <div className="w-10 h-10 bg-green-500/10 rounded-xl flex items-center justify-center">
-              <TrendingUp className="text-green-500 w-5 h-5" />
+            <div className="w-8 h-8 bg-muted rounded-lg flex items-center justify-center">
+              <TrendingUp className="text-muted-foreground w-4 h-4" />
             </div>
           </div>
-          <div className="mt-4">
-            <span className="text-xs text-green-500 font-medium">↗ +5.2% from last month</span>
+          <div className="mt-3">
+            <span className="text-xs text-muted-foreground">This month</span>
           </div>
         </CardContent>
       </Card>
@@ -49,14 +49,14 @@ export default function MetricsCards({ metrics }: MetricsCardsProps) {
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Nudges Sent</p>
+              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Reminders Sent</p>
               <p className="text-3xl font-semibold text-foreground mt-2">{metrics.nudgesSent}</p>
             </div>
-            <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
-              <PlaneTakeoff className="text-primary w-5 h-5" />
+            <div className="w-8 h-8 bg-muted rounded-lg flex items-center justify-center">
+              <PlaneTakeoff className="text-muted-foreground w-4 h-4" />
             </div>
           </div>
-          <div className="mt-4">
+          <div className="mt-3">
             <span className="text-xs text-muted-foreground">This month</span>
           </div>
         </CardContent>
@@ -69,11 +69,11 @@ export default function MetricsCards({ metrics }: MetricsCardsProps) {
               <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Avg. Collection Time</p>
               <p className="text-3xl font-semibold text-foreground mt-2">{metrics.avgCollectionTime}</p>
             </div>
-            <div className="w-10 h-10 bg-purple-500/10 rounded-xl flex items-center justify-center">
-              <Clock className="text-purple-500 w-5 h-5" />
+            <div className="w-8 h-8 bg-muted rounded-lg flex items-center justify-center">
+              <Clock className="text-muted-foreground w-4 h-4" />
             </div>
           </div>
-          <div className="mt-4">
+          <div className="mt-3">
             <span className="text-xs text-muted-foreground">days</span>
           </div>
         </CardContent>
