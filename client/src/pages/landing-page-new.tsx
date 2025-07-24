@@ -26,9 +26,9 @@ export default function LandingPage() {
             <a href="#how-it-works" className="text-muted-foreground hover:text-foreground transition-colors font-medium">How-to</a>
             <a href="#specifications" className="text-muted-foreground hover:text-foreground transition-colors font-medium">Specifications</a>
             <a href="#contact" className="text-muted-foreground hover:text-foreground transition-colors font-medium">Contact Us</a>
-            <a href="/api/login">
-              <Button className="px-6 py-2 rounded-full bg-primary hover:bg-primary/90">Start Now</Button>
-            </a>
+            <Link href="/auth">
+              <Button className="px-6 py-2 rounded-full bg-primary hover:bg-primary/90">Login</Button>
+            </Link>
           </nav>
         </div>
       </header>
@@ -48,7 +48,7 @@ export default function LandingPage() {
               so you can stop chasing and get back to work that actually pays.
             </p>
             <div className="flex items-center justify-center gap-4 pt-8">
-              <a href="/api/login">
+              <Link href="/auth">
                 <Button 
                   size="lg" 
                   className="px-8 py-4 text-lg rounded-full bg-primary hover:bg-primary/90 shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105"
@@ -56,7 +56,7 @@ export default function LandingPage() {
                   Get Started Free
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
-              </a>
+              </Link>
             </div>
             
             {/* Hero Visual */}

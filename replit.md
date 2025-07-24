@@ -10,6 +10,23 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+### January 24, 2025 - Authentication System Migration
+- **Migrated from Replit OAuth to email/password authentication**:
+  - Removed Replit OpenID Connect integration
+  - Implemented traditional email/password login system
+  - Added email verification workflow with SMTP support
+  - Updated database schema with verification fields
+  - Created comprehensive auth page with login/registration forms
+- **Fixed landing page issues**:
+  - Removed duplicate landing page file
+  - Updated "Start Now" button to say "Login" 
+  - Fixed all auth buttons to redirect to `/auth` page instead of API endpoints
+- **Updated authentication flow**:
+  - Users must verify email before logging in
+  - Password hashing with scrypt and salt
+  - Session-based authentication with PostgreSQL storage
+  - Proper error handling for unverified accounts
+
 ### January 23, 2025 - UX Simplification & Email Integration Update
 - **Migration completed** from Replit Agent to Replit environment
 - **Simplified terminology** throughout the application:
