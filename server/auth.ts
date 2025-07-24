@@ -139,6 +139,9 @@ export function setupAuth(app: Express) {
       const emailVerificationToken = generateEmailVerificationToken();
       const emailVerificationExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
 
+      // In development mode without SMTP, auto-verify users
+      const shouldAutoVerify = process.env.NODE_ENV === 'development' && !emailTransporter;
+
       const user = await storage.createUser({
         email,
         password: await hashPassword(password),
@@ -146,30 +149,57 @@ export function setupAuth(app: Express) {
         lastName,
         emailVerificationToken,
         emailVerificationExpiry,
-        isEmailVerified: false,
+        isEmailVerified: shouldAutoVerify,
       });
 
-      // Send verification email
+      // Send verification email if SMTP is configured
       if (emailTransporter) {
-        const verificationUrl = `${req.protocol}://${req.get('host')}/api/verify-email?token=${emailVerificationToken}`;
-        
-        await emailTransporter.sendMail({
-          from: process.env.SMTP_USER,
-          to: email,
-          subject: "Verify your Flow account",
-          html: `
-            <h2>Welcome to Flow!</h2>
-            <p>Please click the link below to verify your email address:</p>
-            <a href="${verificationUrl}">Verify Email</a>
-            <p>This link will expire in 24 hours.</p>
-          `,
-        });
+        try {
+          const verificationUrl = `${req.protocol}://${req.get('host')}/api/verify-email?token=${emailVerificationToken}`;
+          
+          await emailTransporter.sendMail({
+            from: process.env.SMTP_USER,
+            to: email,
+            subject: "Verify your Flow account",
+            html: `
+              <h2>Welcome to Flow!</h2>
+              <p>Please click the link below to verify your email address:</p>
+              <a href="${verificationUrl}">Verify Email</a>
+              <p>This link will expire in 24 hours.</p>
+            `,
+          });
+          
+          res.status(201).json({ 
+            message: "Registration successful. Please check your email to verify your account.",
+            user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName }
+          });
+        } catch (emailError) {
+          console.error("Email sending failed:", emailError);
+          // If email fails, auto-verify in development
+          if (process.env.NODE_ENV === 'development') {
+            await storage.verifyUserEmail(emailVerificationToken);
+            res.status(201).json({ 
+              message: "Registration successful. Email verification was skipped in development mode.",
+              user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName }
+            });
+          } else {
+            throw emailError;
+          }
+        }
+      } else {
+        // No email service configured
+        if (shouldAutoVerify) {
+          res.status(201).json({ 
+            message: "Registration successful. You can now log in immediately.",
+            user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName }
+          });
+        } else {
+          res.status(201).json({ 
+            message: "Registration successful, but email verification is required. Please contact support.",
+            user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName }
+          });
+        }
       }
-
-      res.status(201).json({ 
-        message: "Registration successful. Please check your email to verify your account.",
-        user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName }
-      });
     } catch (error: any) {
       console.error("Registration error:", error);
       res.status(500).json({ message: "Registration failed: " + error.message });
