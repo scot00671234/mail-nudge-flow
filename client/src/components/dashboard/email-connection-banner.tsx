@@ -24,50 +24,45 @@ export function EmailConnectionBanner() {
 
   if (activeConnection) {
     return (
-      <Alert className="border-green-200 bg-green-50">
-        <CheckCircle className="h-4 w-4 text-green-600" />
-        <AlertDescription className="text-green-800 flex items-center justify-between">
-          <span>
-            <strong>Email connected!</strong> Payment reminders will be sent from {activeConnection.email}
-          </span>
+      <div className="bg-green-50 border border-green-100 rounded-xl px-4 py-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+              <CheckCircle className="h-4 w-4 text-green-600" />
+            </div>
+            <div>
+              <p className="text-sm font-medium text-green-900">Email connected</p>
+              <p className="text-xs text-green-700">Reminders will be sent from {activeConnection.email}</p>
+            </div>
+          </div>
           <Link href="/email-setup">
-            <Button variant="outline" size="sm" className="ml-2 border-green-300 text-green-700 hover:bg-green-100">
+            <Button variant="ghost" size="sm" className="text-green-700 hover:bg-green-100 text-xs">
               Manage
             </Button>
           </Link>
-        </AlertDescription>
-      </Alert>
+        </div>
+      </div>
     );
   }
 
   return (
-    <Card className="border-orange-200 bg-orange-50">
-      <CardContent className="p-4">
-        <div className="flex items-start justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
-              <Mail className="w-5 h-5 text-orange-600" />
-            </div>
-            <div>
-              <h3 className="font-medium text-orange-900">Connect Your Email</h3>
-              <p className="text-sm text-orange-700">
-                Set up email connection to start sending automatic payment reminders
-              </p>
-            </div>
+    <div className="bg-blue-50 border border-blue-100 rounded-xl px-4 py-3">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+            <Mail className="w-4 h-4 text-blue-600" />
           </div>
-          <div className="flex items-center gap-2">
-            <Badge variant="outline" className="border-orange-300 text-orange-700 bg-white">
-              Setup Required
-            </Badge>
-            <Link href="/email-setup">
-              <Button size="sm" className="bg-orange-600 hover:bg-orange-700 text-white">
-                Connect Email
-                <ArrowRight className="w-4 h-4 ml-1" />
-              </Button>
-            </Link>
+          <div>
+            <p className="text-sm font-medium text-blue-900">Connect your email</p>
+            <p className="text-xs text-blue-700">Set up email to send automatic payment reminders</p>
           </div>
         </div>
-      </CardContent>
-    </Card>
+        <Link href="/email-setup">
+          <Button size="sm" className="bg-primary hover:bg-primary/90 text-white text-xs px-4 py-2 rounded-lg">
+            Connect Email
+          </Button>
+        </Link>
+      </div>
+    </div>
   );
 }
