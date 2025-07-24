@@ -866,4 +866,7 @@ export class DatabaseStorage implements IStorage {
   }
 }
 
-export const storage = new DatabaseStorage();
+// Initialize storage based on environment and database availability
+export const storage = (db && process.env.NODE_ENV !== 'development') 
+  ? new DatabaseStorage() 
+  : new MemStorage();
