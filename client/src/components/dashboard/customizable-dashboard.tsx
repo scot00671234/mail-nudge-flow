@@ -25,6 +25,7 @@ import { cn } from '@/lib/utils';
 import { useQuery } from '@tanstack/react-query';
 import type { DashboardMetrics } from '@/lib/types';
 import { formatCurrency } from '@/lib/utils';
+import { EmailFlowWidget } from './email-flow-widget';
 
 // Widget types
 export type WidgetType = 
@@ -35,7 +36,8 @@ export type WidgetType =
   | 'quick-actions'
   | 'payment-reminders'
   | 'customer-insights'
-  | 'performance-chart';
+  | 'performance-chart'
+  | 'email-flow-setup';
 
 interface Widget {
   id: string;
@@ -103,15 +105,23 @@ const AVAILABLE_WIDGETS: Omit<Widget, 'id'>[] = [
     icon: TrendingUp,
     size: 'large',
     color: 'bg-pink-50 border-pink-200 dark:bg-pink-950 dark:border-pink-800'
+  },
+  {
+    type: 'email-flow-setup',
+    title: 'Email Flow Setup',
+    icon: Settings,
+    size: 'large',
+    color: 'bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-950 dark:to-indigo-900 border-blue-200 dark:border-blue-800'
   }
 ];
 
 // Default dashboard layout
 const DEFAULT_WIDGETS: Widget[] = [
-  { ...AVAILABLE_WIDGETS[0], id: 'widget-1' },
-  { ...AVAILABLE_WIDGETS[1], id: 'widget-2' },
-  { ...AVAILABLE_WIDGETS[2], id: 'widget-3' },
-  { ...AVAILABLE_WIDGETS[3], id: 'widget-4' }
+  { ...AVAILABLE_WIDGETS[0], id: 'widget-1' }, // Key Metrics
+  { ...AVAILABLE_WIDGETS[1], id: 'widget-2' }, // Outstanding Invoices
+  { ...AVAILABLE_WIDGETS[2], id: 'widget-3' }, // Email Status
+  { ...AVAILABLE_WIDGETS[4], id: 'widget-4' }, // Quick Actions
+  { ...AVAILABLE_WIDGETS[8], id: 'widget-5' }  // Email Flow Setup
 ];
 
 // Widget content components
@@ -261,6 +271,8 @@ const renderWidgetContent = (type: WidgetType) => {
       return <RecentActivityWidget />;
     case 'quick-actions':
       return <QuickActionsWidget />;
+    case 'email-flow-setup':
+      return <EmailFlowWidget />;
     default:
       return (
         <div className="text-center text-gray-500 py-4">

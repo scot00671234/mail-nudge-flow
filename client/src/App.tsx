@@ -38,10 +38,6 @@ function Router() {
               <Route path="/dashboard" component={Dashboard} />
               <Route path="/invoices" component={Invoices} />
               <Route path="/customers" component={Customers} />
-              <Route path="/email-templates" component={EmailTemplates} />
-              <Route path="/nudge-settings" component={NudgeSettings} />
-              <Route path="/analytics" component={Analytics} />
-              <Route path="/account" component={AccountSettings} />
               <Route path="/email-setup" component={EmailSetup} />
             </Switch>
           </SidebarInset>

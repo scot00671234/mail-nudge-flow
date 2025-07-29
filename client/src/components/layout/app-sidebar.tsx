@@ -33,29 +33,9 @@ const menuItems = [
     icon: Users,
   },
   {
-    title: "Payment Reminders",
-    url: "/nudge-settings",
-    icon: CreditCard,
-  },
-  {
-    title: "Reminder Messages",
-    url: "/email-templates",
-    icon: MessageSquare,
-  },
-  {
-    title: "Reports",
-    url: "/analytics",
-    icon: BarChart3,
-  },
-  {
     title: "Email Setup",
     url: "/email-setup",
     icon: Mail,
-  },
-  {
-    title: "Settings",
-    url: "/account",
-    icon: Settings,
   },
 ];
 
