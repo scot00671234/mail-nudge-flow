@@ -6,6 +6,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { 
   Plus, 
   X, 
@@ -19,13 +20,16 @@ import {
   AlertTriangle,
   Settings,
   BarChart3,
-  Activity
+  Activity,
+  Maximize2,
+  ExternalLink
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useQuery } from '@tanstack/react-query';
 import type { DashboardMetrics } from '@/lib/types';
 import { formatCurrency } from '@/lib/utils';
 import { EmailFlowWidget } from './email-flow-widget';
+import { Link } from 'wouter';
 
 // Widget types
 export type WidgetType = 
@@ -282,13 +286,135 @@ const renderWidgetContent = (type: WidgetType) => {
   }
 };
 
+// Widget popup content components
+const MetricsDetailedWidget = () => {
+  const { data: metrics } = useQuery<DashboardMetrics>({
+    queryKey: ["/api/dashboard/metrics"],
+  });
+
+  const { data: invoices } = useQuery({
+    queryKey: ["/api/invoices"],
+  });
+
+  return (
+    <div className="space-y-6">
+      <div className="grid grid-cols-2 gap-6">
+        <div className="text-center p-4 bg-orange-50 dark:bg-orange-950 rounded-lg">
+          <div className="text-3xl font-bold text-orange-600 mb-2">
+            {metrics?.outstandingInvoices || 0}
+          </div>
+          <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">Outstanding Invoices</div>
+          <div className="text-lg font-semibold text-orange-700">
+            {formatCurrency(metrics?.outstandingValue || 0)}
+          </div>
+        </div>
+        <div className="text-center p-4 bg-green-50 dark:bg-green-950 rounded-lg">
+          <div className="text-3xl font-bold text-green-600 mb-2">
+            {metrics?.responseRate || 0}%
+          </div>
+          <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">Response Rate</div>
+          <div className="text-sm text-green-700">This month</div>
+        </div>
+      </div>
+      
+      <div className="grid grid-cols-2 gap-6">
+        <div className="text-center p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+          <div className="text-3xl font-bold text-blue-600 mb-2">
+            {metrics?.remindersSent || 0}
+          </div>
+          <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">Reminders Sent</div>
+          <div className="text-sm text-blue-700">This month</div>
+        </div>
+        <div className="text-center p-4 bg-purple-50 dark:bg-purple-950 rounded-lg">
+          <div className="text-3xl font-bold text-purple-600 mb-2">
+            {metrics?.avgCollectionTime || 0}
+          </div>
+          <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">Avg Collection</div>
+          <div className="text-sm text-purple-700">days</div>
+        </div>
+      </div>
+
+      <div className="space-y-3">
+        <h4 className="font-medium">Recent Trends</h4>
+        <div className="space-y-2">
+          <div className="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-800 rounded-md">
+            <span className="text-sm">Payment success rate</span>
+            <span className="text-sm font-medium text-green-600">+12% this month</span>
+          </div>
+          <div className="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-800 rounded-md">
+            <span className="text-sm">Average response time</span>
+            <span className="text-sm font-medium text-blue-600">-2 days faster</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex gap-2">
+        <Button asChild className="flex-1">
+          <Link href="/invoices">
+            <FileText size={16} className="mr-2" />
+            View All Invoices
+          </Link>
+        </Button>
+        <Button variant="outline" asChild className="flex-1">
+          <Link href="/analytics">
+            <BarChart3 size={16} className="mr-2" />
+            Detailed Analytics
+          </Link>
+        </Button>
+      </div>
+    </div>
+  );
+};
+
+const QuickActionsDetailedWidget = () => {
+  return (
+    <div className="space-y-4">
+      <h4 className="font-medium">Quick Actions</h4>
+      <div className="grid grid-cols-2 gap-3">
+        <Button asChild className="h-auto py-4 flex flex-col gap-2">
+          <Link href="/invoices">
+            <FileText size={24} />
+            <span>Create Invoice</span>
+          </Link>
+        </Button>
+        <Button asChild variant="outline" className="h-auto py-4 flex flex-col gap-2">
+          <Link href="/customers">
+            <Users size={24} />
+            <span>Add Customer</span>
+          </Link>
+        </Button>
+        <Button asChild variant="outline" className="h-auto py-4 flex flex-col gap-2">
+          <Link href="/email-setup">
+            <Mail size={24} />
+            <span>Email Setup</span>
+          </Link>
+        </Button>
+        <Button variant="outline" className="h-auto py-4 flex flex-col gap-2">
+          <Settings size={24} />
+          <span>Settings</span>
+        </Button>
+      </div>
+      
+      <div className="space-y-3 pt-4 border-t">
+        <h5 className="text-sm font-medium">Recent Actions</h5>
+        <div className="space-y-2">
+          <div className="text-sm text-gray-600 dark:text-gray-400">
+            No recent actions yet. Start by creating your first invoice!
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // Sortable widget component
 interface SortableWidgetProps {
   widget: Widget;
   onRemove: (id: string) => void;
+  onExpand: (widget: Widget) => void;
 }
 
-const SortableWidget: React.FC<SortableWidgetProps> = ({ widget, onRemove }) => {
+const SortableWidget: React.FC<SortableWidgetProps> = ({ widget, onRemove, onExpand }) => {
   const {
     attributes,
     listeners,
@@ -317,7 +443,9 @@ const SortableWidget: React.FC<SortableWidgetProps> = ({ widget, onRemove }) => 
         isDragging && "z-50 opacity-50"
       )}
     >
-      <Card className={cn("h-full transition-all duration-200", widget.color)}>
+      <Card className={cn("h-full transition-all duration-200 cursor-pointer hover:shadow-md", widget.color)}
+        onClick={() => onExpand(widget)}
+      >
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -326,15 +454,31 @@ const SortableWidget: React.FC<SortableWidgetProps> = ({ widget, onRemove }) => 
             </div>
             <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
               <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onExpand(widget);
+                }}
+                className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded"
+                title="Expand widget"
+              >
+                <Maximize2 size={14} className="text-gray-500" />
+              </button>
+              <button
                 {...attributes}
                 {...listeners}
+                onClick={(e) => e.stopPropagation()}
                 className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded cursor-grab active:cursor-grabbing"
+                title="Drag to reorder"
               >
                 <GripVertical size={14} className="text-gray-500" />
               </button>
               <button
-                onClick={() => onRemove(widget.id)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onRemove(widget.id);
+                }}
                 className="p-1 hover:bg-red-100 dark:hover:bg-red-900 rounded"
+                title="Remove widget"
               >
                 <X size={14} className="text-red-500" />
               </button>
@@ -395,6 +539,7 @@ const WidgetSelector: React.FC<WidgetSelectorProps> = ({ onAdd, usedTypes }) => 
 export const CustomizableDashboard: React.FC = () => {
   const [widgets, setWidgets] = useState<Widget[]>(DEFAULT_WIDGETS);
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [expandedWidget, setExpandedWidget] = useState<Widget | null>(null);
 
   const handleDragStart = useCallback((event: DragStartEvent) => {
     setActiveId(event.active.id as string);
@@ -426,9 +571,63 @@ export const CustomizableDashboard: React.FC = () => {
     setWidgets((prev) => prev.filter((w) => w.id !== id));
   }, []);
 
+  const handleExpandWidget = useCallback((widget: Widget) => {
+    setExpandedWidget(widget);
+  }, []);
+
   const usedTypes = useMemo(() => widgets.map((w) => w.type), [widgets]);
 
   const activeWidget = activeId ? widgets.find((w) => w.id === activeId) : null;
+
+  // Render expanded widget content
+  const renderExpandedContent = (widget: Widget) => {
+    switch (widget.type) {
+      case 'metrics-overview':
+        return <MetricsDetailedWidget />;
+      case 'quick-actions':
+        return <QuickActionsDetailedWidget />;
+      case 'email-flow-setup':
+        return <EmailFlowWidget />;
+      case 'outstanding-invoices':
+        return (
+          <div className="space-y-4">
+            <OutstandingInvoicesWidget />
+            <Button asChild className="w-full">
+              <Link href="/invoices">
+                <FileText size={16} className="mr-2" />
+                View All Invoices
+              </Link>
+            </Button>
+          </div>
+        );
+      case 'email-status':
+        return (
+          <div className="space-y-4">
+            <EmailStatusWidget />
+            <Button asChild className="w-full">
+              <Link href="/email-setup">
+                <Mail size={16} className="mr-2" />
+                Go to Email Setup
+              </Link>
+            </Button>
+          </div>
+        );
+      case 'recent-activity':
+        return (
+          <div className="space-y-4">
+            <RecentActivityWidget />
+            <Button asChild variant="outline" className="w-full">
+              <Link href="/analytics">
+                <BarChart3 size={16} className="mr-2" />
+                View Analytics
+              </Link>
+            </Button>
+          </div>
+        );
+      default:
+        return renderWidgetContent(widget.type);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -457,6 +656,7 @@ export const CustomizableDashboard: React.FC = () => {
                 key={widget.id}
                 widget={widget}
                 onRemove={handleRemoveWidget}
+                onExpand={handleExpandWidget}
               />
             ))}
           </SortableContext>
@@ -482,6 +682,25 @@ export const CustomizableDashboard: React.FC = () => {
           ) : null}
         </DragOverlay>
       </DndContext>
+
+      {/* Widget Expansion Dialog */}
+      <Dialog open={!!expandedWidget} onOpenChange={() => setExpandedWidget(null)}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          {expandedWidget && (
+            <>
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                  <expandedWidget.icon size={20} />
+                  {expandedWidget.title}
+                </DialogTitle>
+              </DialogHeader>
+              <div className="mt-4">
+                {renderExpandedContent(expandedWidget)}
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
