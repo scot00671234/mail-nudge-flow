@@ -4,59 +4,62 @@
 
 :root {
   --background: hsl(0, 0%, 100%);
-  --foreground: hsl(0, 0%, 9%);
-  --muted: hsl(0, 0%, 98%);
-  --muted-foreground: hsl(0, 0%, 60%);
+  --foreground: hsl(240, 10%, 9%);
+  --muted: hsl(240, 5%, 96%);
+  --muted-foreground: hsl(240, 4%, 46%);
   --popover: hsl(0, 0%, 100%);
-  --popover-foreground: hsl(0, 0%, 9%);
+  --popover-foreground: hsl(240, 10%, 9%);
   --card: hsl(0, 0%, 100%);
-  --card-foreground: hsl(0, 0%, 9%);
-  --border: hsl(0, 0%, 92%);
-  --input: hsl(0, 0%, 97%);
-  --primary: hsl(220, 13%, 9%);
-  --primary-foreground: hsl(0, 0%, 100%);
-  --secondary: hsl(0, 0%, 97%);
-  --secondary-foreground: hsl(0, 0%, 9%);
-  --accent: hsl(0, 0%, 97%);
-  --accent-foreground: hsl(0, 0%, 9%);
-  --destructive: hsl(0, 62%, 48%);
-  --destructive-foreground: hsl(0, 0%, 100%);
-  --ring: hsl(220, 13%, 9%);
-  --radius: 8px;
+  --card-foreground: hsl(240, 10%, 9%);
+  --border: hsl(240, 6%, 90%);
+  --input: hsl(240, 6%, 96%);
+  --primary: hsl(240, 6%, 10%);
+  --primary-foreground: hsl(0, 0%, 98%);
+  --secondary: hsl(240, 5%, 96%);
+  --secondary-foreground: hsl(240, 6%, 10%);
+  --accent: hsl(240, 5%, 96%);
+  --accent-foreground: hsl(240, 6%, 10%);
+  --destructive: hsl(0, 84%, 60%);
+  --destructive-foreground: hsl(0, 0%, 98%);
+  --ring: hsl(240, 5%, 64%);
+  --radius: 12px;
   
-  /* Clean Apple-like colors */
-  --success: hsl(122, 30%, 45%);
-  --warning: hsl(35, 80%, 50%);
-  --info: hsl(200, 70%, 50%);
+  /* Vercel-inspired colors */
+  --glass-bg: hsla(0, 0%, 100%, 0.8);
+  --glass-border: hsla(240, 6%, 90%, 0.5);
+  --success: hsl(142, 76%, 36%);
+  --warning: hsl(43, 96%, 56%);
+  --info: hsl(212, 92%, 45%);
 }
 
 .dark {
-  --background: hsl(240, 10%, 3.9%);
+  --background: hsl(240, 10%, 4%);
   --foreground: hsl(0, 0%, 98%);
-  --muted: hsl(240, 3.7%, 15.9%);
-  --muted-foreground: hsl(240, 5%, 64.9%);
-  --popover: hsl(240, 10%, 3.9%);
+  --muted: hsl(240, 4%, 11%);
+  --muted-foreground: hsl(240, 5%, 65%);
+  --popover: hsl(240, 10%, 4%);
   --popover-foreground: hsl(0, 0%, 98%);
-  --card: hsl(240, 10%, 3.9%);
+  --card: hsl(240, 4%, 9%);
   --card-foreground: hsl(0, 0%, 98%);
-  --border: hsl(240, 3.7%, 15.9%);
-  --input: hsl(240, 3.7%, 15.9%);
-  --primary: hsl(219, 91%, 62%);
-  --primary-foreground: hsl(0, 0%, 100%);
-  --secondary: hsl(240, 3.7%, 15.9%);
+  --border: hsl(240, 4%, 16%);
+  --input: hsl(240, 4%, 16%);
+  --primary: hsl(0, 0%, 98%);
+  --primary-foreground: hsl(240, 6%, 10%);
+  --secondary: hsl(240, 4%, 16%);
   --secondary-foreground: hsl(0, 0%, 98%);
-  --accent: hsl(240, 3.7%, 15.9%);
+  --accent: hsl(240, 4%, 16%);
   --accent-foreground: hsl(0, 0%, 98%);
-  --destructive: hsl(0, 62.8%, 30.6%);
-  --destructive-foreground: hsl(0, 0%, 98%);
-  --ring: hsl(240, 4.9%, 83.9%);
-  --radius: 0.5rem;
+  --destructive: hsl(0, 62%, 50%);
+  --destructive-foreground: hsl(0, 85%, 97%);
+  --ring: hsl(240, 5%, 64%);
+  --radius: 12px;
   
-  /* Flow specific colors for dark mode */
-  --flow-blue: hsl(219, 91%, 62%);
-  --flow-success: hsl(142, 76%, 36%);
-  --flow-warning: hsl(43, 96%, 56%);
-  --flow-danger: hsl(0, 84%, 60%);
+  /* Dark mode glass effect */
+  --glass-bg: hsla(240, 4%, 9%, 0.8);
+  --glass-border: hsla(240, 4%, 16%, 0.5);
+  --success: hsl(142, 76%, 36%);
+  --warning: hsl(43, 96%, 56%);
+  --info: hsl(212, 92%, 60%);
 }
 
 @layer base {
@@ -66,12 +69,69 @@
 
   body {
     @apply font-sans antialiased bg-background text-foreground;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
     letter-spacing: -0.011em;
+    background: linear-gradient(to bottom right, hsl(240, 5%, 98%), hsl(240, 5%, 96%));
+  }
+  
+  .dark body {
+    background: linear-gradient(to bottom right, hsl(240, 10%, 4%), hsl(240, 8%, 6%));
   }
   
   h1, h2, h3, h4, h5, h6 {
     @apply font-medium tracking-tight;
+  }
+  
+  /* Glass morphism effects */
+  .glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+  }
+  
+  .glass-card {
+    background: hsla(0, 0%, 100%, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid hsla(240, 6%, 90%, 0.3);
+    box-shadow: 0 8px 32px hsla(240, 5%, 5%, 0.08);
+  }
+  
+  .dark .glass-card {
+    background: hsla(240, 4%, 9%, 0.7);
+    border: 1px solid hsla(240, 4%, 16%, 0.3);
+    box-shadow: 0 8px 32px hsla(0, 0%, 0%, 0.3);
+  }
+  
+  /* Smooth animations */
+  .animate-in {
+    animation: slide-in 0.3s ease-out;
+  }
+  
+  @keyframes slide-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Hover effects */
+  .hover-lift {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px hsla(240, 5%, 5%, 0.12);
+  }
+  
+  .dark .hover-lift:hover {
+    box-shadow: 0 12px 40px hsla(0, 0%, 0%, 0.4);
   }
   
   .hero-heading {

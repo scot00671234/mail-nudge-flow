@@ -443,7 +443,11 @@ const SortableWidget: React.FC<SortableWidgetProps> = ({ widget, onRemove, onExp
         isDragging && "z-50 opacity-50"
       )}
     >
-      <Card className={cn("h-full transition-all duration-200 cursor-pointer hover:shadow-md", widget.color)}
+      <Card className={cn(
+        "h-full transition-all duration-300 cursor-pointer glass-card hover-lift animate-in",
+        widget.color.replace(/bg-\w+-\d+/, '').replace(/border-\w+-\d+/, ''),
+        "border-0"
+      )}
         onClick={() => onExpand(widget)}
       >
         <CardHeader className="pb-3">
@@ -630,15 +634,17 @@ export const CustomizableDashboard: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 p-6">
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-          <p className="text-gray-600 dark:text-gray-400">
+        <div className="space-y-1">
+          <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+            Dashboard
+          </h1>
+          <p className="text-muted-foreground text-lg">
             Drag and drop widgets to customize your workspace
           </p>
         </div>
-        <Button variant="outline" size="sm">
+        <Button variant="outline" size="sm" className="glass-card border-0 hover-lift">
           <Settings size={16} className="mr-2" />
           Customize Layout
         </Button>
@@ -649,7 +655,7 @@ export const CustomizableDashboard: React.FC = () => {
         onDragEnd={handleDragEnd}
         collisionDetection={closestCorners}
       >
-        <div className="grid grid-cols-1 md:grid-cols-6 gap-4 auto-rows-min">
+        <div className="grid grid-cols-1 md:grid-cols-6 gap-6 auto-rows-min">
           <SortableContext items={widgets.map((w) => w.id)} strategy={rectSortingStrategy}>
             {widgets.map((widget) => (
               <SortableWidget
@@ -685,16 +691,16 @@ export const CustomizableDashboard: React.FC = () => {
 
       {/* Widget Expansion Dialog */}
       <Dialog open={!!expandedWidget} onOpenChange={() => setExpandedWidget(null)}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto glass-card border-0 animate-in">
           {expandedWidget && (
             <>
-              <DialogHeader>
-                <DialogTitle className="flex items-center gap-2">
-                  <expandedWidget.icon size={20} />
+              <DialogHeader className="space-y-3">
+                <DialogTitle className="flex items-center gap-3 text-xl">
+                  <expandedWidget.icon size={24} className="text-primary" />
                   {expandedWidget.title}
                 </DialogTitle>
               </DialogHeader>
-              <div className="mt-4">
+              <div className="mt-6">
                 {renderExpandedContent(expandedWidget)}
               </div>
             </>
