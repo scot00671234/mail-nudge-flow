@@ -1,8 +1,8 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { setupAuth } from "./auth";
-import { emailService, EMAIL_PROVIDERS } from "./email-service";
+import { setupProductionAuth, requireAuth } from "./production-auth";
+import { productionEmailService, EMAIL_PROVIDERS } from "./production-email-service";
 import Stripe from "stripe";
 import { 
   insertCustomerSchema, 
@@ -29,8 +29,8 @@ function requireAuth(req: any, res: any, next: any) {
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Set up authentication first
-  setupAuth(app);
+  // Set up production authentication
+  setupProductionAuth(app);
 
   // Dashboard metrics
   app.get("/api/dashboard/metrics", requireAuth, async (req, res) => {
@@ -360,15 +360,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       let authUrl: string;
 
       if (provider === 'gmail') {
-        authUrl = emailService.getGmailAuthUrl();
+        authUrl = productionEmailService.getGmailAuthUrl();
       } else if (provider === 'outlook') {
-        authUrl = emailService.getOutlookAuthUrl();
+        authUrl = productionEmailService.getOutlookAuthUrl();
       } else {
         return res.status(400).json({ message: "Unsupported email provider" });
       }
 
       // Store user ID in session for callback
-      req.session.oauthUserId = req.user.id;
+      req.session.oauthUserId = req.user?.id;
       res.json({ authUrl });
     } catch (error) {
       console.error('OAuth initiation failed:', error);
@@ -387,7 +387,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.redirect(`/?error=${encodeURIComponent('OAuth callback failed')}`);
       }
 
-      const connection = await emailService.handleGmailCallback(code as string, req.session.oauthUserId);
+      const connection = await productionEmailService.handleGmailCallback(code as string, req.session.oauthUserId);
       delete req.session.oauthUserId;
       
       res.redirect(`/?email_connected=gmail&email=${encodeURIComponent(connection.email)}`);
@@ -407,7 +407,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.redirect(`/?error=${encodeURIComponent('OAuth callback failed')}`);
       }
 
-      const connection = await emailService.handleOutlookCallback(code as string, req.session.oauthUserId);
+      const connection = await productionEmailService.handleOutlookCallback(code as string, req.session.oauthUserId);
       delete req.session.oauthUserId;
       
       res.redirect(`/?email_connected=outlook&email=${encodeURIComponent(connection.email)}`);
@@ -425,7 +425,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Connection ID and test email are required" });
       }
 
-      await emailService.sendTestEmail(connectionId, testEmail);
+      await productionEmailService.sendTestEmail(connectionId, testEmail);
       res.json({ message: "Test email sent successfully!" });
     } catch (error) {
       console.error('Test email failed:', error);
@@ -500,6 +500,72 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Subscription webhook failed:', error);
       res.status(500).json({ message: "Failed to process subscription change" });
+    }
+  });
+
+  // Profile management routes
+  app.put("/api/auth/update-profile", requireAuth, async (req, res) => {
+    try {
+      const { firstName, lastName, email } = req.body;
+
+      if (!req.user) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+
+      // Check if email is already taken by another user
+      if (email !== req.user.email) {
+        const existingUser = await storage.getUserByEmail(email);
+        if (existingUser && existingUser.id !== req.user.id) {
+          return res.status(400).json({ message: "Email already taken" });
+        }
+      }
+
+      const updatedUser = await storage.updateUser(req.user.id, {
+        firstName,
+        lastName,
+        email,
+      });
+
+      if (!updatedUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      res.json({
+        message: "Profile updated successfully",
+        user: {
+          id: updatedUser.id,
+          email: updatedUser.email,
+          firstName: updatedUser.firstName,
+          lastName: updatedUser.lastName,
+        },
+      });
+    } catch (error) {
+      console.error("Update profile error:", error);
+      res.status(500).json({ message: "Failed to update profile" });
+    }
+  });
+
+  // Delete account
+  app.delete("/api/auth/delete-account", requireAuth, async (req, res) => {
+    try {
+      if (!req.user) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+
+      // Delete user and all associated data
+      await storage.deleteUser(req.user.id);
+
+      // Destroy session
+      req.session.destroy((err) => {
+        if (err) {
+          console.error("Session destruction error:", err);
+        }
+      });
+
+      res.json({ message: "Account deleted successfully" });
+    } catch (error) {
+      console.error("Delete account error:", error);
+      res.status(500).json({ message: "Failed to delete account" });
     }
   });
 

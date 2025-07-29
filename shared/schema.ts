@@ -129,6 +129,11 @@ export const insertUserSchema = createInsertSchema(users).omit({
   emailVerificationExpiry: true,
   resetToken: true,
   resetTokenExpiry: true,
+  stripeCustomerId: true,
+  stripeSubscriptionId: true,
+  subscriptionStatus: true,
+  subscriptionPlan: true,
+  hideEmailFooter: true,
 });
 
 export const insertCustomerSchema = createInsertSchema(customers).omit({
