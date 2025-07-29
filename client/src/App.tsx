@@ -16,8 +16,7 @@ import NudgeSettings from "@/pages/nudge-settings";
 import Analytics from "@/pages/analytics";
 import AccountSettings from "@/pages/account-settings";
 import EmailSetup from "@/pages/email-setup";
-import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
-import AppSidebar from "@/components/layout/app-sidebar";
+// Removed sidebar components for full dashboard experience
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -30,18 +29,13 @@ function Router() {
           <Route path="/auth" component={AuthPage} />
         </>
       ) : (
-        <SidebarProvider>
-          <AppSidebar />
-          <SidebarInset>
-            <Switch>
-              <Route path="/" component={Dashboard} />
-              <Route path="/dashboard" component={Dashboard} />
-              <Route path="/invoices" component={Invoices} />
-              <Route path="/customers" component={Customers} />
-              <Route path="/email-setup" component={EmailSetup} />
-            </Switch>
-          </SidebarInset>
-        </SidebarProvider>
+        <Switch>
+          <Route path="/" component={Dashboard} />
+          <Route path="/dashboard" component={Dashboard} />
+          <Route path="/invoices" component={Dashboard} />
+          <Route path="/customers" component={Dashboard} />
+          <Route path="/email-setup" component={Dashboard} />
+        </Switch>
       )}
       <Route component={NotFound} />
     </Switch>
